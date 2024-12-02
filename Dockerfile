@@ -8,7 +8,7 @@ WORKDIR /root
 COPY pom.xml .
 COPY .mvn ./.mvn
 COPY mvnw .
-
+RUN sed -i 's/\r$//' mvnw
 RUN ./mvnw dependency:go-offline
 
 COPY src ./src
