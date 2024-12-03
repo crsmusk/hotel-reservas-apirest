@@ -11,6 +11,8 @@ services:
       SPRING_DATASOURCE_DB: ${SPRING_DATASOURCE_DB}
     volumes:
       - ./src:/app/src
+    networks:
+      - default
    
   db:
     image: mysql:8.0
@@ -21,12 +23,16 @@ services:
       - "3307:3306"
     volumes:
       - data_db:/var/lib/mysql
+    networks:
+      - default
       
     
 
 volumes:
   data_db:
-
+networks:
+  default:
+    driver: bridge
 
   
 
