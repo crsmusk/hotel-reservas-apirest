@@ -1,5 +1,31 @@
-
+version: '3.8'
+services:
+  reservas:
+    image: reservas
+    ports:
+      - "8080:80"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_DB: ${SPRING_DATASOURCE_DB}
+    volumes:
+      - ./src:/app/src
+   
+  db:
+    image: mysql:8.0
+    environment:
+     MYSQL_DATABASE: apirest
+     MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - data_db:/var/lib/mysql
+      
     
+
+volumes:
+  data_db:
 
 
   
