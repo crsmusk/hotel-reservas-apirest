@@ -3,7 +3,7 @@ services:
   reservas:
     image: reservas
     ports:
-      - "8080:80"
+      - 8080:80 
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
@@ -20,7 +20,7 @@ services:
      MYSQL_DATABASE: apirest
      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     ports:
-      - "3307:3306"
+      - 3307:3306
     volumes:
       - data_db:/var/lib/mysql
     networks:
