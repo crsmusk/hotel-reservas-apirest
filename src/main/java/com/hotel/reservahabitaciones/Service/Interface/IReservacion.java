@@ -11,12 +11,12 @@ public interface IReservacion {
     public ReservacionDTO getById(Long id);
     public void delete(Long id);
     public void save(ReservacionDTO reservacionDTO);
-    public ReservacionDTO updateSalida(Long id,LocalDate salida);
-    public List<ReservacionDTO>getBySalidaDespuesDe(LocalDate fecha);
-    public List<ReservacionDTO>getBySalidaAntesDe(LocalDate fecha);
-    public List<ReservacionDTO>getByEntradaDespuesDe(LocalDate fecha);
-    public List<ReservacionDTO>getByEntradaAntesDe(LocalDate fecha);
-    public ReservacionDTO cambiarHabitacion(Long idReserva,Long idHabitacionActual,Long idNuevaHabitacion,LocalDate salida);
+    public ReservacionDTO updateOutPut(Long id, LocalDate salida);
+    public List<ReservacionDTO> getByOutPutAfterThan(LocalDate fecha);
+    public List<ReservacionDTO> getByOutPutBeforeThan(LocalDate fecha);
+    public List<ReservacionDTO> getByInPutAfterThan(LocalDate fecha);
+    public List<ReservacionDTO> getByInputBeforeThan(LocalDate fecha);
+    public ReservacionDTO changeRoom(Long idReserva, Long idHabitacionActual, Long idNuevaHabitacion, LocalDate salida);
 
 
 }

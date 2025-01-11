@@ -1,11 +1,7 @@
 package com.hotel.reservahabitaciones.Controller;
 
-import com.hotel.reservahabitaciones.Model.DTOs.PermisoDTO;
 import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
-import com.hotel.reservahabitaciones.Model.Entities.Reservacion;
-import com.hotel.reservahabitaciones.Model.Entities.Rol;
 import com.hotel.reservahabitaciones.Service.Impl.RolServiceImpl;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +27,7 @@ public class RolController {
 
     @GetMapping("/buscar-rol-por-nombre/{nombre}")
     public ResponseEntity<RolDTO>getByName(@PathVariable String nombre){
-        return new ResponseEntity<>(rolService.getByNombre(nombre),HttpStatus.OK);
+        return new ResponseEntity<>(rolService.getByName(nombre),HttpStatus.OK);
     }
 
     @PostMapping
@@ -42,12 +38,12 @@ public class RolController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RolDTO>update(@RequestBody RolDTO rolDTO,@PathVariable Long id){
-        return new ResponseEntity<>(rolService.updateNombre(id,rolDTO),HttpStatus.OK);
+        return new ResponseEntity<>(rolService.updateName(id,rolDTO),HttpStatus.OK);
     }
 
     @PutMapping("/actualizar-permisos/{id}")
     public ResponseEntity<RolDTO>updatePermissions(@PathVariable Long id,@RequestBody List<String>permisos){
-        return new ResponseEntity<>(rolService.actualizarPermisos(id,permisos),HttpStatus.OK);
+        return new ResponseEntity<>(rolService.updatePermissions(id,permisos),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

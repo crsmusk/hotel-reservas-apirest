@@ -28,12 +28,12 @@ public class ClienteController {
 
     @GetMapping("/buscar-cliente-por-nombre/{nombre}")
     public ResponseEntity<List<ClienteDTO>>getByName(@PathVariable String nombre){
-        return new ResponseEntity<>(clienteService.getByNombre(nombre),HttpStatus.OK);
+        return new ResponseEntity<>(clienteService.getByName(nombre),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-cliente-por-apellido/{apellido}")
     public ResponseEntity<List<ClienteDTO>>getByLastName(@PathVariable String apellido){
-        return new ResponseEntity<>(clienteService.getByApellido(apellido),HttpStatus.OK);
+        return new ResponseEntity<>(clienteService.getByLastName(apellido),HttpStatus.OK);
     }
 
     @PostMapping

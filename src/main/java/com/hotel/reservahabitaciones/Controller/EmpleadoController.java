@@ -29,12 +29,12 @@ public class EmpleadoController {
 
     @GetMapping("/buscar-empleado-por-nombre/{nombre}")
     public ResponseEntity<List<EmpleadoDTO>>getByName(@PathVariable String nombre){
-        return new ResponseEntity<>(empleadoService.getByNombre(nombre),HttpStatus.OK);
+        return new ResponseEntity<>(empleadoService.getByName(nombre),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-empleado-por-apellido/{apellido}")
     public ResponseEntity<List<EmpleadoDTO>>getByLastName(@PathVariable String apellido){
-        return new ResponseEntity<>(empleadoService.getByApellido(apellido),HttpStatus.OK);
+        return new ResponseEntity<>(empleadoService.getByLastName(apellido),HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

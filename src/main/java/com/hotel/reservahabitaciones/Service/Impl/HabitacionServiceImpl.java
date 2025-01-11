@@ -39,7 +39,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByTipoHabitacion(String tipo) {
+    public List<HabitacionDTO> getByTypeRoom(String tipo) {
         if (habitacionRepo.findByTipoHabitacionContainingIgnoreCase(tipo).isEmpty()){
             throw new HabitacionNoEncontradaException("no se encontro el tipo de habitacion "+tipo);
         }else{
@@ -48,7 +48,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByPreferencia(String preferencia) {
+    public List<HabitacionDTO> getByPreference(String preferencia) {
         if (habitacionRepo.findByPreferenciaContainingIgnoreCase(preferencia).isEmpty()){
             throw new HabitacionNoEncontradaException("no hay habitaciones con la preferencia  "+preferencia);
         }else{
@@ -57,7 +57,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByCapacidad(int capacidad) {
+    public List<HabitacionDTO> getByCapacity(int capacidad) {
         if (habitacionRepo.findByCapacidadGreaterThanEqual(capacidad).isEmpty()){
             throw new HabitacionNoEncontradaException("no hay habitaciones con la capacidad de "+capacidad);
         }else{
@@ -66,7 +66,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByTamaño(int tamaño) {
+    public List<HabitacionDTO> getBySize(int tamaño) {
         if (habitacionRepo.findByTamañoGreaterThanEqual(tamaño).isEmpty()){
             throw new HabitacionNoEncontradaException("no hay habitaciones con "+tamaño+" metros cuadros");
         }else{
@@ -75,7 +75,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByPrecioNocheMenorQue(BigDecimal precio) {
+    public List<HabitacionDTO> getByPriceLessThan(BigDecimal precio) {
         if (habitacionRepo.findByPrecioNocheLessThanEqual(precio).isEmpty()){
             throw new HabitacionNoEncontradaException("no hay habitaciones con un precio menor a "+precio);
         }else {
@@ -84,7 +84,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByPrecioNocheMayorQue(BigDecimal precio) {
+    public List<HabitacionDTO> getByPriceGreaterThan(BigDecimal precio) {
         if (habitacionRepo.findByPrecioNocheGreaterThanEqual(precio).isEmpty()){
             throw new HabitacionNoEncontradaException("no hay habitaciones con un precio mayor a "+precio);
         }else{
@@ -93,7 +93,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByHabitacionesDisponibles() {
+    public List<HabitacionDTO> getByRoomAvailable() {
        if (habitacionRepo.findByEstadoTrue().isEmpty()){
            throw new HabitacionNoEncontradaException("no hay habitaciones disponibles");
        }else{
@@ -102,7 +102,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByHabitacionesNoDisponibles() {
+    public List<HabitacionDTO> getByRoomUnaVailable() {
         if (habitacionRepo.findByEstadoFalse().isEmpty()){
             throw new HabitacionNoEncontradaException("todas las habitaciones estan disponibles");
         }else {
@@ -111,7 +111,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByAccesibilidad(String accesibilidad) {
+    public List<HabitacionDTO> getByAccesibility(String accesibilidad) {
         List<Habitacion>listaHabitaciones=habitacionRepo.findByAccesibilidadContainingIgnoreCase(accesibilidad);
         if (listaHabitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException("no hay habitaciones con la accesibilidad "+accesibilidad);

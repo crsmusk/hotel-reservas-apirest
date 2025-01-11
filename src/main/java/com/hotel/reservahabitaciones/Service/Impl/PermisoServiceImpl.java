@@ -40,7 +40,7 @@ public class PermisoServiceImpl implements IPermiso {
     }
 
     @Override
-    public PermisoDTO getByNombre(String nombre) {
+    public PermisoDTO getByName(String nombre) {
         if (permisoRepo.findByNombrePermisoIgnoreCase(nombre).isPresent()){
             return mapper.permisoAPermisoDto(permisoRepo.findByNombrePermisoIgnoreCase(nombre).get());
         }else{

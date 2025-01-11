@@ -47,7 +47,7 @@ public class RolServiceImpl implements IRol {
     }
 
     @Override
-    public RolDTO getByNombre(String nombre) {
+    public RolDTO getByName(String nombre) {
         if (rolRepo.findByNombreRolIgnoreCase(nombre).isPresent()){
             return mapper.rolARolDto(rolRepo.findByNombreRolIgnoreCase(nombre).get());
         }else{
@@ -56,7 +56,7 @@ public class RolServiceImpl implements IRol {
     }
 
     @Override
-    public RolDTO updateNombre(Long id, RolDTO rolDTO) {
+    public RolDTO updateName(Long id, RolDTO rolDTO) {
         if (rolRepo.existsById(id)){
             Rol rol=rolRepo.findById(id).get();
             rol.setNombreRol(rolDTO.getNombre());
@@ -92,7 +92,7 @@ public class RolServiceImpl implements IRol {
     }
 
     @Override
-    public RolDTO actualizarPermisos(Long id, List<String> permisos) {
+    public RolDTO updatePermissions(Long id, List<String> permisos) {
         if (permisoRepo.existsById(id)){
             Rol rol=rolRepo.findById(id).get();
             List<Permiso>lista=new ArrayList<>();

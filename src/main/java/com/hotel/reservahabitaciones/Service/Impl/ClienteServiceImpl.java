@@ -44,7 +44,7 @@ public class ClienteServiceImpl implements ICliente {
     }
 
     @Override
-    public List<ClienteDTO> getByNombre(String nombre) {
+    public List<ClienteDTO> getByName(String nombre) {
         if(clienteRepo.findByNombreIgnoreCase(nombre).isEmpty()){
             throw new UsuarioNoEncontradoException("no se encontraron clientes con el nomnre "+nombre);
         }else {
@@ -53,7 +53,7 @@ public class ClienteServiceImpl implements ICliente {
     }
 
     @Override
-    public List<ClienteDTO> getByApellido(String apellido) {
+    public List<ClienteDTO> getByLastName(String apellido) {
         if (clienteRepo.findByApellidoIgnoreCase(apellido).isEmpty()){
             throw new UsuarioNoEncontradoException("no se econtro ningun usuario con el apellido "+apellido);
         }else{
@@ -70,7 +70,7 @@ public class ClienteServiceImpl implements ICliente {
         cliente.setNombre(clienteDTO.getNombre());
         cliente.setDni(clienteDTO.getDni());
         cliente.setTelefono(clienteDTO.getTelefono());
-        usuarioService.registrarCliente(clienteDTO);
+        usuarioService.registerCustommer(clienteDTO);
         if (usuarioRepo.findByEmailIgnoreCase(clienteDTO.getEmail()).isPresent()){
             cliente.setUsuario(usuarioRepo.findByEmailIgnoreCase(clienteDTO.getEmail()).get());
         }

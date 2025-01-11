@@ -91,7 +91,7 @@ public class ReservacionServiceImpl implements IReservacion {
     }
 
     @Override
-    public ReservacionDTO updateSalida(Long id, LocalDate salida) {
+    public ReservacionDTO updateOutPut(Long id, LocalDate salida) {
        if (reservaRepo.existsById(id)){
            Reservacion reservacion=reservaRepo.findById(id).get();
            reservacion.setFechaSalida(salida);
@@ -105,7 +105,7 @@ public class ReservacionServiceImpl implements IReservacion {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getBySalidaDespuesDe(LocalDate fecha) {
+    public List<ReservacionDTO> getByOutPutAfterThan(LocalDate fecha) {
         if (reservaRepo.findByFechaSalidaGreaterThanEqual(fecha).isEmpty()){
             throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
         }else {
@@ -115,7 +115,7 @@ public class ReservacionServiceImpl implements IReservacion {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getBySalidaAntesDe(LocalDate fecha) {
+    public List<ReservacionDTO> getByOutPutBeforeThan(LocalDate fecha) {
         if (reservaRepo.findByFechaSalidaLessThanEqual(fecha).isEmpty()){
             throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
         }else {
@@ -125,7 +125,7 @@ public class ReservacionServiceImpl implements IReservacion {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getByEntradaDespuesDe(LocalDate fecha) {
+    public List<ReservacionDTO> getByInPutAfterThan(LocalDate fecha) {
         if (reservaRepo.findByFechaEntradaGreaterThanEqual(fecha).isEmpty()){
             throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
         }else{
@@ -135,7 +135,7 @@ public class ReservacionServiceImpl implements IReservacion {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getByEntradaAntesDe(LocalDate fecha) {
+    public List<ReservacionDTO> getByInputBeforeThan(LocalDate fecha) {
         if (reservaRepo.findByFechaEntradaLessThanEqual(fecha).isEmpty()){
             throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
         }else{
@@ -145,7 +145,7 @@ public class ReservacionServiceImpl implements IReservacion {
 
     @Override
     @Transactional
-    public ReservacionDTO cambiarHabitacion(Long idReserva, Long idHabitacionActual, Long idNuevaHabitacion, LocalDate salida) {
+    public ReservacionDTO changeRoom(Long idReserva, Long idHabitacionActual, Long idNuevaHabitacion, LocalDate salida) {
         List<Habitacion>listaHabitaciones=new ArrayList<>();
 
         if (reservaRepo.existsById(idReserva)){

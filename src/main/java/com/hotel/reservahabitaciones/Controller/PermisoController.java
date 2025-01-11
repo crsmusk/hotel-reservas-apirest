@@ -1,9 +1,7 @@
 package com.hotel.reservahabitaciones.Controller;
 
 import com.hotel.reservahabitaciones.Model.DTOs.PermisoDTO;
-import com.hotel.reservahabitaciones.Model.Entities.Habitacion;
 import com.hotel.reservahabitaciones.Service.Impl.PermisoServiceImpl;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +28,7 @@ public class PermisoController {
 
     @GetMapping("/buscar-por-nombre/{nombre}")
     public ResponseEntity<PermisoDTO>getByName(@PathVariable String nombre){
-        return new ResponseEntity<>(permisoService.getByNombre(nombre),HttpStatus.OK);
+        return new ResponseEntity<>(permisoService.getByName(nombre),HttpStatus.OK);
     }
 
     @PostMapping

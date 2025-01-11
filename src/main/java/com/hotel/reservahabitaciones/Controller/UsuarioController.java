@@ -1,7 +1,6 @@
 package com.hotel.reservahabitaciones.Controller;
 
 import com.hotel.reservahabitaciones.Model.DTOs.UsuarioDTO;
-import com.hotel.reservahabitaciones.Model.Entities.Usuario;
 import com.hotel.reservahabitaciones.Service.Impl.UsuarioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,7 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarioService.getByEmail(email),HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<?>saveUsuario(@RequestBody UsuarioDTO usuarioDTO){
+    public ResponseEntity<?> saveUser(@RequestBody UsuarioDTO usuarioDTO){
         usuarioService.save(usuarioDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

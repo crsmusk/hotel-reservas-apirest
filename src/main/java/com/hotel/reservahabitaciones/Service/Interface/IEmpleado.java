@@ -8,8 +8,8 @@ import java.util.List;
 public interface IEmpleado {
     public List<EmpleadoDTO> getAll();
     public EmpleadoDTO getById(Long id);
-    public List<EmpleadoDTO>getByNombre(String nombre);
-    public List<EmpleadoDTO>getByApellido(String apellido);
+    public List<EmpleadoDTO>getByName(String nombre);
+    public List<EmpleadoDTO>getByLastName(String apellido);
     public void save(EmpleadoDTO empleadoDTO);
     public EmpleadoDTO update(Long id,EmpleadoDTO empleadoDTO);
     public void delete(Long id);

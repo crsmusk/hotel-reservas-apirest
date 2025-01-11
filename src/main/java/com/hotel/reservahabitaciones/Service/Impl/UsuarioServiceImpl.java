@@ -96,7 +96,7 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public void registrarCliente(ClienteDTO clienteDTO) {
+    public void registerCustommer(ClienteDTO clienteDTO) {
         Usuario usuario=new Usuario();
         usuario.setPassword(clienteDTO.getPassword());
         usuario.setEmail(clienteDTO.getEmail());
@@ -109,7 +109,7 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public void registrarEmpleado(EmpleadoDTO empleadoDTO) {
+    public void registerEmployee(EmpleadoDTO empleadoDTO) {
         Usuario usuario=new Usuario();
         usuario.setPassword(empleadoDTO.getPassword());
         usuario.setEmail(empleadoDTO.getEmail());
@@ -122,7 +122,7 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public void actualizarContraseña(String email,String contraseñaNueva) {
+    public void updatePassword(String email, String contraseñaNueva) {
         if (usuarioRepo.findByEmailIgnoreCase(email).isPresent()){
             Usuario usuario=usuarioRepo.findByEmailIgnoreCase(email).get();
             usuario.setPassword(contraseñaNueva);
@@ -132,7 +132,7 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public void actualizarRoles(Long id, List<RolDTO> roles) {
+    public void UpdateRoles(Long id, List<RolDTO> roles) {
         List<Rol>lista=new ArrayList<>();
         if (usuarioRepo.existsById(id)){
             Usuario usuario=usuarioRepo.findById(id).get();

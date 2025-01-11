@@ -14,8 +14,8 @@ public interface IUsuario {
     public void save(UsuarioDTO usuarioDTO);
     public UsuarioDTO update(Long id,UsuarioDTO usuarioDTO);
     public void delete(Long id);
-    public void registrarCliente(ClienteDTO clienteDTO);
-    public void registrarEmpleado(EmpleadoDTO EmpleadoDTO);
-    public void actualizarContraseña(String email,String contraseñaNueva);
-    public void actualizarRoles(Long id, List<RolDTO>roles);
+    public void registerCustommer(ClienteDTO clienteDTO);
+    public void registerEmployee(EmpleadoDTO EmpleadoDTO);
+    public void updatePassword(String email, String contraseñaNueva);
+    public void UpdateRoles(Long id, List<RolDTO>roles);
 }

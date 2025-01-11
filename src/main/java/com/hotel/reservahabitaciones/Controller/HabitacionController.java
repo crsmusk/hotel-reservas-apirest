@@ -41,48 +41,48 @@ public class HabitacionController {
     }
     @GetMapping("/buscar-habitacion-por-tipo/{tipo}")
     public ResponseEntity<List<HabitacionDTO>>getByroomType(@PathVariable String tipo){
-        return new ResponseEntity<>(habitacionService.getByTipoHabitacion(tipo),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByTypeRoom(tipo),HttpStatus.OK);
     }
 
 
     @GetMapping("/habitaciones-disponibles")
     public ResponseEntity<List<HabitacionDTO>>getRommroomAvailable(){
-        return new ResponseEntity<>(habitacionService.getByHabitacionesDisponibles(),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByRoomAvailable(),HttpStatus.OK);
     }
 
     @GetMapping("/habitaciones-ocupadas")
     public ResponseEntity<List<HabitacionDTO>>getRoomOccupied(){
-        return new ResponseEntity<>(habitacionService.getByHabitacionesNoDisponibles(),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByRoomUnaVailable(),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-por-Preferencia/{preferencia}")
     public ResponseEntity<List<HabitacionDTO>>getByRoomPreference(@PathVariable String preferencia){
-        return new ResponseEntity<>(habitacionService.getByPreferencia(preferencia),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByPreference(preferencia),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-por-capacidad/{capacidad}")
     public ResponseEntity<List<HabitacionDTO>>getByRoomCapacity(@PathVariable int capacidad){
-        return new ResponseEntity<>(habitacionService.getByCapacidad(capacidad),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByCapacity(capacidad),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-por-tamaño/{tamaño}")
     public ResponseEntity<List<HabitacionDTO>>getBySizeRoom(@PathVariable int tamaño){
-          return new ResponseEntity<>(habitacionService.getByTamaño(tamaño),HttpStatus.OK);
+          return new ResponseEntity<>(habitacionService.getBySize(tamaño),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-por-precio-mayorQue/{precio}")
     public ResponseEntity<List<HabitacionDTO>>getByPriceGreaterThan(@PathVariable BigDecimal precio){
-        return new ResponseEntity<>(habitacionService.getByPrecioNocheMayorQue(precio),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByPriceGreaterThan(precio),HttpStatus.OK);
     }
 
 
     @GetMapping("/buscar-por-precio-menorQue/{precio}")
     public ResponseEntity<List<HabitacionDTO>>getByPriceLessThan(@PathVariable BigDecimal precio){
-        return new ResponseEntity<>(habitacionService.getByPrecioNocheMenorQue(precio),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByPriceLessThan(precio),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-por-accesibilidad/{accesibilidad}")
     public ResponseEntity<List<HabitacionDTO>>getByaccessibility(@PathVariable String accesibilidad){
-        return new ResponseEntity<>(habitacionService.getByAccesibilidad(accesibilidad),HttpStatus.OK);
+        return new ResponseEntity<>(habitacionService.getByAccesibility(accesibilidad),HttpStatus.OK);
     }
 }

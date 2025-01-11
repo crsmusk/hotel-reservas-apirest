@@ -2,7 +2,6 @@ package com.hotel.reservahabitaciones.Service.Impl;
 
 import com.hotel.reservahabitaciones.Exception.Exceptions.UsuarioNoEncontradoException;
 import com.hotel.reservahabitaciones.Mapper.EmpleadoMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
 import com.hotel.reservahabitaciones.Model.DTOs.EmpleadoDTO;
 import com.hotel.reservahabitaciones.Model.Entities.Empleado;
 import com.hotel.reservahabitaciones.Repository.EmpleadoRepository;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.Data;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 @Service
@@ -49,7 +46,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
     }
 
     @Override
-    public List<EmpleadoDTO> getByNombre(String nombre) {
+    public List<EmpleadoDTO> getByName(String nombre) {
         if (empleadoRepo.findByNombreIgnoreCase(nombre).isEmpty()){
             throw new UsuarioNoEncontradoException("no hay empleados registrados con el nombre "+nombre);
         }else{
@@ -59,7 +56,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
     }
 
     @Override
-    public List<EmpleadoDTO> getByApellido(String apellido) {
+    public List<EmpleadoDTO> getByLastName(String apellido) {
         if (empleadoRepo.findByApellidoIgnoreCase(apellido).isEmpty()){
             throw new UsuarioNoEncontradoException("no se hay empleados registrados con el apellido "+apellido);
         }else {
@@ -77,7 +74,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
         empleado.setDni(empleadoDTO.getDni());
         empleado.setPuesto(empleadoDTO.getPuesto());
         empleado.setNombre(empleadoDTO.getNombre());
-        usuarioService.registrarEmpleado(empleadoDTO);
+        usuarioService.registerEmployee(empleadoDTO);
         if (usuarioRepository.findByEmailIgnoreCase(empleadoDTO.getEmail()).isPresent()){
             empleado.setUsuario(usuarioRepository.findByEmailIgnoreCase(empleadoDTO.getEmail()).get());
         }
