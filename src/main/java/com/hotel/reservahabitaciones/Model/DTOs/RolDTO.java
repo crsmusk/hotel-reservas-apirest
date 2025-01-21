@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class RolDTO {
+    Long id;
     String nombre;
     List<String>permisos;
 }

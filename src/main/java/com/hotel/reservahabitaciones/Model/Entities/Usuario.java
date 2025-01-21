@@ -25,7 +25,7 @@ public class Usuario {
     private Boolean accountNoExpired=true;
     @Column(name = "account_no_locked")
     private Boolean accountNoLocked=true;
-    @Column(name = "credentil_no_expired")
+    @Column(name = "credential_no_expired")
     private Boolean credentialNoExprired=true;
 
     @ManyToMany(fetch = FetchType.EAGER)

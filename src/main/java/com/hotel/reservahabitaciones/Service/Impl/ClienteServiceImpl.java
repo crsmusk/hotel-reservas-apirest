@@ -4,6 +4,7 @@ import com.hotel.reservahabitaciones.Exception.Exceptions.UsuarioNoEncontradoExc
 import com.hotel.reservahabitaciones.Mapper.ClienteMapper;
 import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
 import com.hotel.reservahabitaciones.Model.Entities.Cliente;
+import com.hotel.reservahabitaciones.Model.Entities.Usuario;
 import com.hotel.reservahabitaciones.Repository.ClienteRepository;
 import com.hotel.reservahabitaciones.Repository.UsuarioRepository;
 import com.hotel.reservahabitaciones.Service.Interface.ICliente;
@@ -12,52 +13,69 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClienteServiceImpl implements ICliente {
 
+    private ClienteRepository clienteRepo;
     @Autowired
-    ClienteRepository clienteRepo;
+    public void setClienteRepositorio(ClienteRepository clienteRepo) {
+        this.clienteRepo = clienteRepo;
+    }
+
+    private  UsuarioServiceImpl usuarioService;
     @Autowired
-    UsuarioServiceImpl usuarioService;
+    public void setUsuarioService(UsuarioServiceImpl usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
+    private UsuarioRepository usuarioRepo;
     @Autowired
-    UsuarioRepository usuarioRepo;
+    public void setUsuarioRepo(UsuarioRepository usuarioRepo) {
+        this.usuarioRepo = usuarioRepo;
+    }
+
+    private ClienteMapper mapper;
     @Autowired
-    ClienteMapper mapper;
+    public void setMapper(ClienteMapper mapper) {
+        this.mapper = mapper;
+    }
+
 
     @Override
     public List<ClienteDTO> getAll() {
         if(clienteRepo.findAll().isEmpty()){
-            throw new UsuarioNoEncontradoException("no hay clientes registrados");
+            throw new UsuarioNoEncontradoException();
         }else{
-            return mapper.ClientesAClientesDto(clienteRepo.findAll());
+            return mapper.clientesAClientesDto(clienteRepo.findAll());
         }
     }
 
     @Override
     public ClienteDTO getById(Long id) {
         if (clienteRepo.existsById(id)){
-            return mapper.clientACLinenteDto(clienteRepo.findById(id).get());
+            return mapper.clienteAClinenteDto(clienteRepo.findById(id).get());
         }else{
-            throw new UsuarioNoEncontradoException("no se encotro el cliente con el id "+id);
+            throw new UsuarioNoEncontradoException();
         }
     }
 
     @Override
     public List<ClienteDTO> getByName(String nombre) {
         if(clienteRepo.findByNombreIgnoreCase(nombre).isEmpty()){
-            throw new UsuarioNoEncontradoException("no se encontraron clientes con el nomnre "+nombre);
+            throw new UsuarioNoEncontradoException();
         }else {
-            return mapper.ClientesAClientesDto(clienteRepo.findByNombreIgnoreCase(nombre));
+            return mapper.clientesAClientesDto(clienteRepo.findByNombreIgnoreCase(nombre));
         }
     }
 
     @Override
     public List<ClienteDTO> getByLastName(String apellido) {
         if (clienteRepo.findByApellidoIgnoreCase(apellido).isEmpty()){
-            throw new UsuarioNoEncontradoException("no se econtro ningun usuario con el apellido "+apellido);
+            throw new UsuarioNoEncontradoException();
         }else{
-            return mapper.ClientesAClientesDto(clienteRepo.findByApellidoIgnoreCase(apellido));
+            return mapper.clientesAClientesDto(clienteRepo.findByApellidoIgnoreCase(apellido));
         }
     }
 
@@ -71,8 +89,9 @@ public class ClienteServiceImpl implements ICliente {
         cliente.setDni(clienteDTO.getDni());
         cliente.setTelefono(clienteDTO.getTelefono());
         usuarioService.registerCustommer(clienteDTO);
-        if (usuarioRepo.findByEmailIgnoreCase(clienteDTO.getEmail()).isPresent()){
-            cliente.setUsuario(usuarioRepo.findByEmailIgnoreCase(clienteDTO.getEmail()).get());
+        Optional<Usuario>usuario=usuarioRepo.findByEmailIgnoreCase(clienteDTO.getEmail());
+        if (usuario.isPresent()){
+            cliente.setUsuario(usuario.get());
         }
         clienteRepo.save(cliente);
 
@@ -86,9 +105,9 @@ public class ClienteServiceImpl implements ICliente {
             cliente.setNombre(clienteDTO.getNombre());
             cliente.setDni(clienteDTO.getDni());
            clienteRepo.save(cliente);
-           return mapper.clientACLinenteDto(cliente);
+           return mapper.clienteAClinenteDto(cliente);
         }else {
-            throw  new UsuarioNoEncontradoException("no se encontro al cliente con el id "+id);
+            throw  new UsuarioNoEncontradoException();
         }
 
     }
@@ -98,7 +117,7 @@ public class ClienteServiceImpl implements ICliente {
       if (clienteRepo.existsById(id)){
           clienteRepo.deleteById(id);
       }else {
-          throw new UsuarioNoEncontradoException("no se encontro el usuario con el id "+id);
+          throw new UsuarioNoEncontradoException();
       }
     }
 }

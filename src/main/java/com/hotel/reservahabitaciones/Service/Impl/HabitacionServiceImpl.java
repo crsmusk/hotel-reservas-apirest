@@ -15,15 +15,23 @@ import java.util.List;
 @Service
 public class HabitacionServiceImpl implements IHabitacion {
 
+
+    private HabitacionRepository habitacionRepo;
     @Autowired
-    HabitacionRepository habitacionRepo;
+    public void setHabitacionRepo(HabitacionRepository habitacionRepo){
+        this.habitacionRepo=habitacionRepo;
+    }
+
+    private HabitacionMapper mapper;
     @Autowired
-    HabitacionMapper mapper;
+    public void setMapper(HabitacionMapper mapper){
+        this.mapper=mapper;
+    }
 
     @Override
     public List<HabitacionDTO> getAll() {
         if(habitacionRepo.findAll().isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitacione registradas");
+            throw new HabitacionNoEncontradaException();
         }else{
             return mapper.habitacionesAHabitacionesDto(habitacionRepo.findAll());
         }
@@ -34,23 +42,24 @@ public class HabitacionServiceImpl implements IHabitacion {
         if (habitacionRepo.existsById(id)){
             return mapper.habitacionAHabitacionDto(habitacionRepo.findById(id).get());
         }else{
-            throw new HabitacionNoEncontradaException("no se encontro la habitacion con el id "+id);
+            throw new HabitacionNoEncontradaException();
         }
     }
 
     @Override
     public List<HabitacionDTO> getByTypeRoom(String tipo) {
-        if (habitacionRepo.findByTipoHabitacionContainingIgnoreCase(tipo).isEmpty()){
-            throw new HabitacionNoEncontradaException("no se encontro el tipo de habitacion "+tipo);
+        List<Habitacion>habitaciones=habitacionRepo.findByTipoHabitacionContainingIgnoreCase(tipo);
+        if (habitaciones.isEmpty()){
+            throw new HabitacionNoEncontradaException();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findAll());
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
     public List<HabitacionDTO> getByPreference(String preferencia) {
         if (habitacionRepo.findByPreferenciaContainingIgnoreCase(preferencia).isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitaciones con la preferencia  "+preferencia);
+            throw new HabitacionNoEncontradaException();
         }else{
             return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByPreferenciaContainingIgnoreCase(preferencia));
         }
@@ -59,25 +68,25 @@ public class HabitacionServiceImpl implements IHabitacion {
     @Override
     public List<HabitacionDTO> getByCapacity(int capacidad) {
         if (habitacionRepo.findByCapacidadGreaterThanEqual(capacidad).isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitaciones con la capacidad de "+capacidad);
+            throw new HabitacionNoEncontradaException();
         }else{
             return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByCapacidadGreaterThanEqual(capacidad));
         }
     }
 
     @Override
-    public List<HabitacionDTO> getBySize(int tamaño) {
-        if (habitacionRepo.findByTamañoGreaterThanEqual(tamaño).isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitaciones con "+tamaño+" metros cuadros");
+    public List<HabitacionDTO> getBySize(int tamano) {
+        if (habitacionRepo.findByTamanoGreaterThanEqual(tamano).isEmpty()){
+            throw new HabitacionNoEncontradaException();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByTamañoGreaterThanEqual(tamaño));
+            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByTamanoGreaterThanEqual(tamano));
         }
     }
 
     @Override
     public List<HabitacionDTO> getByPriceLessThan(BigDecimal precio) {
         if (habitacionRepo.findByPrecioNocheLessThanEqual(precio).isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitaciones con un precio menor a "+precio);
+            throw new HabitacionNoEncontradaException();
         }else {
             return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByPrecioNocheLessThanEqual(precio));
         }
@@ -86,7 +95,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     @Override
     public List<HabitacionDTO> getByPriceGreaterThan(BigDecimal precio) {
         if (habitacionRepo.findByPrecioNocheGreaterThanEqual(precio).isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitaciones con un precio mayor a "+precio);
+            throw new HabitacionNoEncontradaException();
         }else{
             return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByPrecioNocheGreaterThanEqual(precio));
         }
@@ -95,7 +104,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     @Override
     public List<HabitacionDTO> getByRoomAvailable() {
        if (habitacionRepo.findByEstadoTrue().isEmpty()){
-           throw new HabitacionNoEncontradaException("no hay habitaciones disponibles");
+           throw new HabitacionNoEncontradaException();
        }else{
            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByEstadoTrue());
        }
@@ -104,7 +113,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     @Override
     public List<HabitacionDTO> getByRoomUnaVailable() {
         if (habitacionRepo.findByEstadoFalse().isEmpty()){
-            throw new HabitacionNoEncontradaException("todas las habitaciones estan disponibles");
+            throw new HabitacionNoEncontradaException();
         }else {
             return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByEstadoFalse());
         }
@@ -114,7 +123,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     public List<HabitacionDTO> getByAccesibility(String accesibilidad) {
         List<Habitacion>listaHabitaciones=habitacionRepo.findByAccesibilidadContainingIgnoreCase(accesibilidad);
         if (listaHabitaciones.isEmpty()){
-            throw new HabitacionNoEncontradaException("no hay habitaciones con la accesibilidad "+accesibilidad);
+            throw new HabitacionNoEncontradaException();
         }else{
             return mapper.habitacionesAHabitacionesDto(listaHabitaciones);
         }
@@ -130,7 +139,7 @@ public class HabitacionServiceImpl implements IHabitacion {
         habitacion.setDescripcion(habitacionDTO.getDescripcion());
         habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
         habitacion.setPreferencia(habitacionDTO.getPreferencia());
-        habitacion.setTamaño(habitacionDTO.getTamaño());
+        habitacion.setTamano(habitacionDTO.getTamaño());
         habitacionRepo.save(habitacion);
     }
 
@@ -145,11 +154,11 @@ public class HabitacionServiceImpl implements IHabitacion {
             habitacion.setDescripcion(habitacionDTO.getDescripcion());
             habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
             habitacion.setPreferencia(habitacionDTO.getPreferencia());
-            habitacion.setTamaño(habitacionDTO.getTamaño());
+            habitacion.setTamano(habitacionDTO.getTamaño());
             habitacionRepo.save(habitacion);
             return mapper.habitacionAHabitacionDto(habitacion);
         }else {
-            throw new HabitacionNoEncontradaException("no se encontro la habitacion con el id "+id);
+            throw new HabitacionNoEncontradaException();
         }
 
     }
@@ -159,7 +168,7 @@ public class HabitacionServiceImpl implements IHabitacion {
       if (habitacionRepo.existsById(id)){
           habitacionRepo.deleteById(id);
       }else{
-          throw new HabitacionNoEncontradaException("no se encontro la habitacion con el id "+id);
+          throw new HabitacionNoEncontradaException();
       }
     }
 

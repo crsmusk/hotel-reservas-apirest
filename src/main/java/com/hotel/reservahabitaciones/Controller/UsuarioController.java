@@ -13,8 +13,12 @@ import java.util.List;
 @RequestMapping("/hotel/usuarios")
 public class UsuarioController {
 
+
+    private UsuarioServiceImpl usuarioService;
     @Autowired
-    UsuarioServiceImpl usuarioService;
+    public void setUsuarioService(UsuarioServiceImpl usuarioService){
+        this.usuarioService=usuarioService;
+    }
 
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>>getAll(){
@@ -29,7 +33,7 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarioService.getByEmail(email),HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody UsuarioDTO usuarioDTO){
+    public ResponseEntity<Void> saveUser(@RequestBody UsuarioDTO usuarioDTO){
         usuarioService.save(usuarioDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -38,7 +42,7 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarioService.update(id,usuarioDTO),HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         usuarioService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

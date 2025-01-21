@@ -11,7 +11,9 @@ public class UsuarioMapper {
     public UsuarioDTO usuarioAUsuarioDto(Usuario usuario){
         UsuarioDTO usuarioDTO=UsuarioDTO.builder()
                 .email(usuario.getEmail())
+                .id(usuario.getId())
                 .password(usuario.getPassword())
+                .roles(usuario.getRoles().stream().map(rol->rol.getNombreRol()).toList())
                 .build();
         return usuarioDTO;
     }

@@ -13,8 +13,12 @@ import java.util.List;
 @RequestMapping("/hotel/permisos")
 public class PermisoController {
 
+
+    private PermisoServiceImpl permisoService;
     @Autowired
-    PermisoServiceImpl permisoService;
+    public void setPermisoService(PermisoServiceImpl permisoService){
+        this.permisoService=permisoService;
+    }
 
     @GetMapping
     public ResponseEntity<List<PermisoDTO>>getAll(){
@@ -32,7 +36,7 @@ public class PermisoController {
     }
 
     @PostMapping
-    public ResponseEntity<?>save(@RequestBody PermisoDTO permisoDTO){
+    public ResponseEntity<Void>save(@RequestBody PermisoDTO permisoDTO){
         permisoService.save(permisoDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -43,7 +47,7 @@ public class PermisoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         permisoService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

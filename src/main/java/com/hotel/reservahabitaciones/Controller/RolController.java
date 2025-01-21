@@ -13,8 +13,12 @@ import java.util.List;
 @RequestMapping("/hotel/roles")
 public class RolController {
 
+
+    private  RolServiceImpl rolService;
     @Autowired
-    RolServiceImpl rolService;
+    public void setRolService(RolServiceImpl rolService){
+        this.rolService=rolService;
+    }
 
     @GetMapping
     public ResponseEntity<List<RolDTO>>getAll(){
@@ -31,7 +35,7 @@ public class RolController {
     }
 
     @PostMapping
-    public ResponseEntity<?>saveRol(@RequestBody RolDTO rolDTO){
+    public ResponseEntity<Void>saveRol(@RequestBody RolDTO rolDTO){
         rolService.save(rolDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -47,7 +51,7 @@ public class RolController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         rolService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

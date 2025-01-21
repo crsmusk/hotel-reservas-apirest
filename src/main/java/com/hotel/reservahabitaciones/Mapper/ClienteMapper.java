@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public class ClienteMapper {
 
-    public ClienteDTO clientACLinenteDto(Cliente cliente){
+    public ClienteDTO clienteAClinenteDto(Cliente cliente){
         ClienteDTO clienteDTO=ClienteDTO.builder()
                 .nombre(cliente.getNombre())
                 .apellido(cliente.getApellido())
@@ -17,11 +17,12 @@ public class ClienteMapper {
                 .password(cliente.getUsuario().getPassword())
                 .dni(cliente.getDni())
                 .telefono(cliente.getTelefono())
+                .id(cliente.getId())
                 .build();
         return  clienteDTO;
     }
 
-    public List<ClienteDTO> ClientesAClientesDto(List<Cliente>clientes){
-        return clientes.stream().map(this::clientACLinenteDto).toList();
+    public List<ClienteDTO> clientesAClientesDto(List<Cliente>clientes){
+        return clientes.stream().map(this::clienteAClinenteDto).toList();
     }
 }

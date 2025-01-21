@@ -14,8 +14,12 @@ import java.util.List;
 @RequestMapping("/hotel/habitaciones")
 public class HabitacionController {
 
+
+    private  HabitacionServiceImpl habitacionService;
     @Autowired
-    HabitacionServiceImpl habitacionService;
+    public void setHabitacionService(HabitacionServiceImpl habitacionService){
+        this.habitacionService=habitacionService;
+    }
 
     @GetMapping
     public ResponseEntity<List<HabitacionDTO>>getAll(){
@@ -26,7 +30,7 @@ public class HabitacionController {
         return new ResponseEntity<>(habitacionService.getById(id),HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<?>save(@RequestBody HabitacionDTO habitacionDTO){
+    public ResponseEntity<Void>save(@RequestBody HabitacionDTO habitacionDTO){
         habitacionService.save(habitacionDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -35,7 +39,7 @@ public class HabitacionController {
         return new ResponseEntity<>(habitacionService.update(id,habitacionDTO),HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         habitacionService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -65,9 +69,9 @@ public class HabitacionController {
         return new ResponseEntity<>(habitacionService.getByCapacity(capacidad),HttpStatus.OK);
     }
 
-    @GetMapping("/buscar-por-tamaño/{tamaño}")
-    public ResponseEntity<List<HabitacionDTO>>getBySizeRoom(@PathVariable int tamaño){
-          return new ResponseEntity<>(habitacionService.getBySize(tamaño),HttpStatus.OK);
+    @GetMapping("/buscar-por-tamaño/{tamano}")
+    public ResponseEntity<List<HabitacionDTO>>getBySizeRoom(@PathVariable int tamano){
+          return new ResponseEntity<>(habitacionService.getBySize(tamano),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-por-precio-mayorQue/{precio}")

@@ -16,13 +16,17 @@ import java.util.List;
 
 @Service
 public class UserDetailService implements UserDetailsService {
-    @Autowired
-    UsuarioRepository usuarioRepo;
+
+   private UsuarioRepository usuarioRepo;
+   @Autowired
+   public void setUsuarioRepo(UsuarioRepository usuarioRepo){
+       this.usuarioRepo=usuarioRepo;
+   }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario=usuarioRepo.findByEmailIgnoreCase(username)
-                .orElseThrow(()->new UsuarioNoEncontradoException("no se encontro el usuario con el email  "+username));
+                .orElseThrow(()->new UsuarioNoEncontradoException());
         List<SimpleGrantedAuthority>listAuthorities=new ArrayList<>();
 
         usuario.getRoles().forEach(Rol->listAuthorities.add(new SimpleGrantedAuthority("ROLE_".concat(Rol.getNombreRol()))));

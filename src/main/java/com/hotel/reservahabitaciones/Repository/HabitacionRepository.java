@@ -13,7 +13,7 @@ public interface HabitacionRepository extends JpaRepository<Habitacion,Long> {
     List<Habitacion> findByTipoHabitacionContainingIgnoreCase(String tipo);
     List<Habitacion> findByPreferenciaContainingIgnoreCase(String preferencia);
     List<Habitacion>findByCapacidadGreaterThanEqual(int capacidad);
-    List<Habitacion> findByTamañoGreaterThanEqual(int tamaño);
+    List<Habitacion> findByTamanoGreaterThanEqual(int tamaño);
     List<Habitacion> findByPrecioNocheLessThanEqual(BigDecimal precioMax);
     List<Habitacion> findByPrecioNocheGreaterThanEqual(BigDecimal precio);
     List<Habitacion>findByEstadoTrue();

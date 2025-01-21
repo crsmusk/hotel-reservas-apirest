@@ -1,5 +1,5 @@
 package com.hotel.reservahabitaciones.Model.Entities;
-
+import jakarta.persistence.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="habitaciones")
 public class Habitacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +22,7 @@ public class Habitacion {
     private String tipoHabitacion;
     private String preferencia;
     private int capacidad;
-    private int tamaño;
+    private int tamano;
     private BigDecimal precioNoche;
     private boolean estado;
     private  String descripcion;

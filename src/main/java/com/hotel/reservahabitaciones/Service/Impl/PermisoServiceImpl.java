@@ -4,7 +4,7 @@ import com.hotel.reservahabitaciones.Exception.Exceptions.PermisoNoEnctradoExcep
 import com.hotel.reservahabitaciones.Mapper.PermisoMapper;
 import com.hotel.reservahabitaciones.Model.DTOs.PermisoDTO;
 import com.hotel.reservahabitaciones.Model.Entities.Permiso;
-import com.hotel.reservahabitaciones.Repository.permisoRepository;
+import com.hotel.reservahabitaciones.Repository.PermisoRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IPermiso;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,18 @@ import java.util.List;
 @Service
 public class PermisoServiceImpl implements IPermiso {
 
+
+    private PermisoRepository permisoRepo;
     @Autowired
-    permisoRepository permisoRepo;
+    public void setPermisoRepo(PermisoRepository permisoRepo){
+       this.permisoRepo=permisoRepo;
+    }
+
+    private PermisoMapper mapper;
     @Autowired
-    PermisoMapper mapper;
+    public void setMapper(PermisoMapper mapper){
+        this.mapper=mapper;
+    }
 
     @Override
     public List<PermisoDTO> getAll() {

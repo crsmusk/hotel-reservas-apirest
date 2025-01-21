@@ -16,6 +16,6 @@ public interface IUsuario {
     public void delete(Long id);
     public void registerCustommer(ClienteDTO clienteDTO);
     public void registerEmployee(EmpleadoDTO EmpleadoDTO);
-    public void updatePassword(String email, String contraseñaNueva);
-    public void UpdateRoles(Long id, List<RolDTO>roles);
+    public void updatePassword(String email, String contrasenaNueva);
+    public void UpdateRoles(Long id, List<String>roles);
 }

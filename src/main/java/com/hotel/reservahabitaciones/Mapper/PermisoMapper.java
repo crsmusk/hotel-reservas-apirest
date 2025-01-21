@@ -12,6 +12,7 @@ public class PermisoMapper {
     public PermisoDTO permisoAPermisoDto(Permiso permiso){
         PermisoDTO permisoDTO=PermisoDTO.builder()
                 .nombre(permiso.getNombrePermiso())
+                .id(permiso.getId())
                 .build();
         return  permisoDTO;
     }

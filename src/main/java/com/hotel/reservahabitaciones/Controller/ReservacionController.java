@@ -14,8 +14,12 @@ import java.util.List;
 @RequestMapping("/hotel/reservacion")
 public class ReservacionController {
 
+
+    private ReservacionServiceImpl reservacionService;
     @Autowired
-    ReservacionServiceImpl reservacionService;
+    public void setReservacionService(ReservacionServiceImpl reservacionService){
+        this.reservacionService=reservacionService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ReservacionDTO>>getAll(){
@@ -53,18 +57,18 @@ public class ReservacionController {
     }
 
     @PostMapping
-    public ResponseEntity<?>save(@RequestBody ReservacionDTO reservacionDTO){
+    public ResponseEntity<Void>save(@RequestBody ReservacionDTO reservacionDTO){
         reservacionService.save(reservacionDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/actualizar-salida/{fecha}")
-    public ResponseEntity<ReservacionDTO>ChangeOutPut(@PathVariable Long id,@PathVariable LocalDate fecha){
+    public ResponseEntity<ReservacionDTO>changeOutPut(@PathVariable Long id,@PathVariable LocalDate fecha){
         return new ResponseEntity<>(reservacionService.updateOutPut(id,fecha),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         reservacionService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

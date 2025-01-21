@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class UsuarioDTO {
+    Long id;
     String email;
     String password;
     List<String>roles;

@@ -2,14 +2,12 @@ package com.hotel.reservahabitaciones.Service.Impl;
 
 import com.hotel.reservahabitaciones.Exception.Exceptions.PermisoNoEnctradoException;
 import com.hotel.reservahabitaciones.Exception.Exceptions.RolNoEncontradoException;
-import com.hotel.reservahabitaciones.Mapper.PermisoMapper;
 import com.hotel.reservahabitaciones.Mapper.RolMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.PermisoDTO;
 import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
 import com.hotel.reservahabitaciones.Model.Entities.Permiso;
 import com.hotel.reservahabitaciones.Model.Entities.Rol;
 import com.hotel.reservahabitaciones.Repository.RolRepository;
-import com.hotel.reservahabitaciones.Repository.permisoRepository;
+import com.hotel.reservahabitaciones.Repository.PermisoRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IRol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +18,32 @@ import java.util.List;
 @Service
 public class RolServiceImpl implements IRol {
 
+
+    private RolRepository rolRepo;
     @Autowired
-    RolRepository rolRepo;
+    public void setRolRepo(RolRepository rolRepo){
+        this.rolRepo=rolRepo;
+    }
+
+    private RolMapper mapper;
     @Autowired
-    RolMapper mapper;
+    public void setRolMapper(RolMapper mapper){
+        this.mapper=mapper;
+    }
+
+    private PermisoRepository permisoRepo;
     @Autowired
-    permisoRepository permisoRepo;
+    public void setPermisoRepo(PermisoRepository permisoRepo){
+        this.permisoRepo=permisoRepo;
+    }
 
     @Override
     public List<RolDTO> getAll() {
-        if(rolRepo.findAll().isEmpty()){
-            throw new RolNoEncontradoException("no hay roles registrados");
+        List<Rol>roles=rolRepo.findAll();
+        if(roles.isEmpty()){
+            throw new RolNoEncontradoException();
         }else{
-            return mapper.rolesARolesDto(rolRepo.findAll());
+            return mapper.rolesARolesDto(roles);
         }
 
     }
@@ -42,7 +53,7 @@ public class RolServiceImpl implements IRol {
         if (rolRepo.existsById(id)){
             return mapper.rolARolDto(rolRepo.findById(id).get());
         }else{
-            throw new RolNoEncontradoException("no se encontro al rol con el id "+id);
+            throw new RolNoEncontradoException();
         }
     }
 
@@ -51,7 +62,7 @@ public class RolServiceImpl implements IRol {
         if (rolRepo.findByNombreRolIgnoreCase(nombre).isPresent()){
             return mapper.rolARolDto(rolRepo.findByNombreRolIgnoreCase(nombre).get());
         }else{
-            throw new RolNoEncontradoException("no se encontro al rol con el nombre "+nombre);
+            throw new RolNoEncontradoException();
         }
     }
 
@@ -60,9 +71,10 @@ public class RolServiceImpl implements IRol {
         if (rolRepo.existsById(id)){
             Rol rol=rolRepo.findById(id).get();
             rol.setNombreRol(rolDTO.getNombre());
+            rolRepo.save(rol);
             return mapper.rolARolDto(rol);
         }else {
-            throw new RolNoEncontradoException("no se encontro el rol con el id "+id);
+            throw new RolNoEncontradoException();
         }
     }
 
@@ -87,7 +99,7 @@ public class RolServiceImpl implements IRol {
        if (rolRepo.existsById(id)){
            rolRepo.deleteById(id);
        }else{
-           throw new RolNoEncontradoException("no se encontro el rol con el id "+id);
+           throw new RolNoEncontradoException();
        }
     }
 
@@ -104,9 +116,10 @@ public class RolServiceImpl implements IRol {
                 }
             }
             rol.setPermisos(lista);
+            rolRepo.save(rol);
             return mapper.rolARolDto(rol);
         }else{
-            throw new RolNoEncontradoException("no se encontro el rol con el id "+id);
+            throw new RolNoEncontradoException();
         }
     }
 }

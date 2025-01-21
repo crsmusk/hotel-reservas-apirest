@@ -1,6 +1,5 @@
 package com.hotel.reservahabitaciones.Controller;
 
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
 import com.hotel.reservahabitaciones.Model.DTOs.EmpleadoDTO;
 import com.hotel.reservahabitaciones.Service.Impl.EmpleadoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,12 @@ import java.util.List;
 @RequestMapping("/hotel/empleados")
 public class EmpleadoController {
 
+
+    private EmpleadoServiceImpl empleadoService;
     @Autowired
-    EmpleadoServiceImpl empleadoService;
+    public void setEmpleadoService(EmpleadoServiceImpl empleadoService) {
+        this.empleadoService = empleadoService;
+    }
 
     @GetMapping
     public ResponseEntity<List<EmpleadoDTO>>getAll(){
@@ -44,13 +47,13 @@ public class EmpleadoController {
 
 
     @PostMapping
-    public ResponseEntity<?>save(@RequestBody EmpleadoDTO empleadoDTO){
+    public ResponseEntity<Void>save(@RequestBody EmpleadoDTO empleadoDTO){
         empleadoService.save(empleadoDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         empleadoService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -13,6 +13,7 @@ public class RolMapper {
     public RolDTO rolARolDto(Rol rol){
         RolDTO rolDTO=RolDTO.builder()
                 .nombre(rol.getNombreRol())
+                .id(rol.getId())
                 .permisos(rol.getPermisos().stream().map(Permiso::getNombrePermiso).toList())
                 .build();
         return rolDTO;

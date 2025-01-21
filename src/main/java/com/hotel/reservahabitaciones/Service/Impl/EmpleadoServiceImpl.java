@@ -4,6 +4,7 @@ import com.hotel.reservahabitaciones.Exception.Exceptions.UsuarioNoEncontradoExc
 import com.hotel.reservahabitaciones.Mapper.EmpleadoMapper;
 import com.hotel.reservahabitaciones.Model.DTOs.EmpleadoDTO;
 import com.hotel.reservahabitaciones.Model.Entities.Empleado;
+import com.hotel.reservahabitaciones.Model.Entities.Usuario;
 import com.hotel.reservahabitaciones.Repository.EmpleadoRepository;
 import com.hotel.reservahabitaciones.Repository.UsuarioRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IEmpleado;
@@ -12,23 +13,40 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmpleadoServiceImpl implements IEmpleado {
 
+
+    private EmpleadoRepository empleadoRepo;
     @Autowired
-    EmpleadoRepository empleadoRepo;
+    public void setEmpleadoRepositorio(EmpleadoRepository empleadoRepo){
+        this.empleadoRepo=empleadoRepo;
+    }
+
+    private UsuarioServiceImpl usuarioService;
     @Autowired
-    UsuarioServiceImpl usuarioService;
+    public void setUsuarioServiceImpl(UsuarioServiceImpl usuarioService){
+        this.usuarioService=usuarioService;
+    }
+
+    private UsuarioRepository usuarioRepo;
     @Autowired
-    UsuarioRepository usuarioRepository;
+    public void setUsuarioRepository(UsuarioRepository usuarioRepo ){
+        this.usuarioRepo=usuarioRepo;
+    }
+
+    private EmpleadoMapper mapper;
     @Autowired
-    EmpleadoMapper mapper;
+    public void setMapper(EmpleadoMapper mapper){
+        this.mapper=mapper;
+    }
 
     @Override
     public List<EmpleadoDTO> getAll() {
         if(empleadoRepo.findAll().isEmpty()){
-            throw new UsuarioNoEncontradoException("no hay empleados registrados");
+            throw new UsuarioNoEncontradoException();
         }else{
             return  mapper.empleadosAEmpladosDto(empleadoRepo.findAll());
         }
@@ -37,10 +55,11 @@ public class EmpleadoServiceImpl implements IEmpleado {
 
     @Override
     public EmpleadoDTO getById(Long id) {
-        if (empleadoRepo.existsById(id)){
-            return mapper.empleadoAEmpleadoDto(empleadoRepo.findById(id).get());
+        Optional<Empleado>empleado=empleadoRepo.findById(id);
+        if (empleado.isPresent()){
+            return mapper.empleadoAEmpleadoDto(empleado.get());
         }else{
-            throw new UsuarioNoEncontradoException("no se encontro al empleado con el id "+id);
+            throw new UsuarioNoEncontradoException();
         }
 
     }
@@ -48,7 +67,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
     @Override
     public List<EmpleadoDTO> getByName(String nombre) {
         if (empleadoRepo.findByNombreIgnoreCase(nombre).isEmpty()){
-            throw new UsuarioNoEncontradoException("no hay empleados registrados con el nombre "+nombre);
+            throw new UsuarioNoEncontradoException();
         }else{
             return  mapper.empleadosAEmpladosDto(empleadoRepo.findByNombreIgnoreCase(nombre));
         }
@@ -58,7 +77,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
     @Override
     public List<EmpleadoDTO> getByLastName(String apellido) {
         if (empleadoRepo.findByApellidoIgnoreCase(apellido).isEmpty()){
-            throw new UsuarioNoEncontradoException("no se hay empleados registrados con el apellido "+apellido);
+            throw new UsuarioNoEncontradoException();
         }else {
             return mapper.empleadosAEmpladosDto(empleadoRepo.findByApellidoIgnoreCase(apellido));
         }
@@ -75,16 +94,18 @@ public class EmpleadoServiceImpl implements IEmpleado {
         empleado.setPuesto(empleadoDTO.getPuesto());
         empleado.setNombre(empleadoDTO.getNombre());
         usuarioService.registerEmployee(empleadoDTO);
-        if (usuarioRepository.findByEmailIgnoreCase(empleadoDTO.getEmail()).isPresent()){
-            empleado.setUsuario(usuarioRepository.findByEmailIgnoreCase(empleadoDTO.getEmail()).get());
+        Optional<Usuario>usuario=usuarioRepo.findByEmailIgnoreCase(empleadoDTO.getEmail());
+        if (usuario.isPresent()){
+            empleado.setUsuario(usuario.get());
         }
         empleadoRepo.save(empleado);
     }
 
     @Override
     public EmpleadoDTO update(Long id, EmpleadoDTO empleadoDTO) {
-        if (empleadoRepo.existsById(id)){
-            Empleado empleado=empleadoRepo.findById(id).get();
+        Optional<Empleado>employee=empleadoRepo.findById(id);
+        if (employee.isPresent()){
+            Empleado empleado=employee.get();
             empleado.setApellido(empleadoDTO.getApellido());
             empleado.setTelefono(empleadoDTO.getTelefono());
             empleado.setDni(empleadoDTO.getDni());
@@ -93,7 +114,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
             empleadoRepo.save(empleado);
             return mapper.empleadoAEmpleadoDto(empleado);
         }else{
-            throw new UsuarioNoEncontradoException("no se econtro el empleado con el id "+id);
+            throw new UsuarioNoEncontradoException();
         }
     }
 
@@ -102,7 +123,7 @@ public class EmpleadoServiceImpl implements IEmpleado {
       if (empleadoRepo.existsById(id)){
           empleadoRepo.deleteById(id);
       }else{
-          throw new UsuarioNoEncontradoException("no se encontro el empleado con el id "+id);
+          throw new UsuarioNoEncontradoException();
       }
     }
 }

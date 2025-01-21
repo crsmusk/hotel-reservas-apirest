@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ClienteDTO {
+     Long id;
      String nombre;
      String apellido;
      String dni;

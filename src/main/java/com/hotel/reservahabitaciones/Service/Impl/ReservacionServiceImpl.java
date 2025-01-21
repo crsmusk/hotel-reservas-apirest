@@ -16,24 +16,39 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 @Service
 public class ReservacionServiceImpl implements IReservacion {
 
+    private ReservaRepository reservaRepo;
     @Autowired
-    ReservaRepository reservaRepo;
+    public void setReservaRepo(ReservaRepository reservaRepo){
+        this.reservaRepo=reservaRepo;
+    }
+
+    private ReservacionMapper mapper;
     @Autowired
-    ReservacionMapper mapper;
+    public void setReservacionMapper(ReservacionMapper mapper){
+        this.mapper=mapper;
+    }
+
+    private HabitacionRepository habitacionRepo;
     @Autowired
-    HabitacionRepository habitacionRepo;
+    public void setHabitacionRepo(HabitacionRepository habitacionRepo){
+        this.habitacionRepo=habitacionRepo;
+    }
+
+    private ClienteRepository clienteRepo;
     @Autowired
-    ClienteRepository clienteRepo;
+    public void setClienteRepo(ClienteRepository clienteRepo){
+        this.clienteRepo=clienteRepo;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReservacionDTO> getAll() {
         if (reservaRepo.findAll().isEmpty()){
-            throw new ReservacionNoEncontradaException("no hay reservaciones registradas");
+            throw new ReservacionNoEncontradaException();
         }else{
             return mapper.reservacionesAReservacionesDto(reservaRepo.findAll());
         }
@@ -46,7 +61,7 @@ public class ReservacionServiceImpl implements IReservacion {
        if (reservaRepo.findById(id).isPresent()){
            return mapper.reservacionAreservacionDto(reservaRepo.findById(id).get());
        }else{
-           throw new ReservacionNoEncontradaException("no se encontro la reservacion con el id "+id);
+           throw new ReservacionNoEncontradaException();
        }
 
     }
@@ -57,7 +72,7 @@ public class ReservacionServiceImpl implements IReservacion {
      if (reservaRepo.existsById(id)){
          reservaRepo.deleteById(id);
      }else {
-         throw  new ReservacionNoEncontradaException("no se encontro la reservacion con el id "+id);
+         throw  new ReservacionNoEncontradaException();
      }
     }
 
@@ -73,16 +88,17 @@ public class ReservacionServiceImpl implements IReservacion {
         if (clienteRepo.existsById(reservacionDTO.getIdCliente())){
             reservacion.setCliente(clienteRepo.findById(reservacionDTO.getIdCliente()).get());
         }else{
-            throw new UsuarioNoEncontradoException("no se encontro el cliente con el id "+reservacionDTO.getIdCliente());
+            throw new UsuarioNoEncontradoException();
         }
 
         for(Long id:reservacionDTO.getIds()){
-            if (habitacionRepo.findById(id).isPresent()){
-                if (disponible(id,reservacionDTO.getFechaEntrada())){
-                    lista.add(habitacionRepo.findById(id).get());
+            Optional<Habitacion>room=habitacionRepo.findById(id);
+            if (room.isPresent()){
+                if (available(room.get(),reservacionDTO.getFechaEntrada())){
+                    lista.add(room.get());
                 }
             }else{
-                throw new HabitacionNoEncontradaException("no se encontro la habitacion con el id "+id);
+                throw new HabitacionNoEncontradaException();
             }
         }
         reservacion.setHabitacions(lista);
@@ -98,7 +114,7 @@ public class ReservacionServiceImpl implements IReservacion {
            reservaRepo.save(reservacion);
            return mapper.reservacionAreservacionDto(reservacion);
        }else{
-           throw new ReservacionNoEncontradaException("no se encotro la reservacion con el id "+id);
+           throw new ReservacionNoEncontradaException();
        }
     }
 
@@ -107,7 +123,7 @@ public class ReservacionServiceImpl implements IReservacion {
     @Transactional(readOnly = true)
     public List<ReservacionDTO> getByOutPutAfterThan(LocalDate fecha) {
         if (reservaRepo.findByFechaSalidaGreaterThanEqual(fecha).isEmpty()){
-            throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
+            throw new ReservacionNoEncontradaException();
         }else {
             return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaSalidaGreaterThanEqual(fecha));
         }
@@ -117,7 +133,7 @@ public class ReservacionServiceImpl implements IReservacion {
     @Transactional(readOnly = true)
     public List<ReservacionDTO> getByOutPutBeforeThan(LocalDate fecha) {
         if (reservaRepo.findByFechaSalidaLessThanEqual(fecha).isEmpty()){
-            throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
+            throw new ReservacionNoEncontradaException();
         }else {
             return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaSalidaLessThanEqual(fecha));
         }
@@ -127,7 +143,7 @@ public class ReservacionServiceImpl implements IReservacion {
     @Transactional(readOnly = true)
     public List<ReservacionDTO> getByInPutAfterThan(LocalDate fecha) {
         if (reservaRepo.findByFechaEntradaGreaterThanEqual(fecha).isEmpty()){
-            throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
+            throw new ReservacionNoEncontradaException();
         }else{
             return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaEntradaGreaterThanEqual(fecha));
         }
@@ -137,7 +153,7 @@ public class ReservacionServiceImpl implements IReservacion {
     @Transactional(readOnly = true)
     public List<ReservacionDTO> getByInputBeforeThan(LocalDate fecha) {
         if (reservaRepo.findByFechaEntradaLessThanEqual(fecha).isEmpty()){
-            throw new ReservacionNoEncontradaException("no hay reservas dentro de ese rango de tiempo");
+            throw new ReservacionNoEncontradaException();
         }else{
             return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaEntradaLessThanEqual(fecha));
         }
@@ -153,52 +169,53 @@ public class ReservacionServiceImpl implements IReservacion {
             cambiarEstados(idHabitacionActual);
             //por si reservo mas de una habitacion
             for (Habitacion h:reservacion.getHabitacions()){
-                if (h.getId()==idHabitacionActual){
+                Long idHabitacion=h.getId();
+                if (idHabitacion.equals(idHabitacionActual)){
                     continue;
                 }
                 listaHabitaciones.add(h);
             }
-            if (disponible(idNuevaHabitacion,LocalDate.now())){
-                listaHabitaciones.add(habitacionRepo.findById(idNuevaHabitacion).get());
-                reservacion.setHabitacions(listaHabitaciones);
-                reservaRepo.save(reservacion);
-                return mapper.reservacionAreservacionDto(reservacion);
+            Optional<Habitacion>room=habitacionRepo.findById(idNuevaHabitacion);
+            if (room.isPresent()){
+                if (available(room.get(),LocalDate.now())){
+                    listaHabitaciones.add(habitacionRepo.findById(idNuevaHabitacion).get());
+                    reservacion.setHabitacions(listaHabitaciones);
+                    reservaRepo.save(reservacion);
+                    return mapper.reservacionAreservacionDto(reservacion);
+                }else{
+                    throw new ReservaNoDisponibleException();
+                }
+
             }else{
-                throw new HabitacionNoDisponibleException("la habitacion no esta disponible ");
+                throw new HabitacionNoEncontradaException();
             }
         }else {
-            throw new ReservacionNoEncontradaException("no se encontro la reservacion con el id "+idReserva);
+            throw new ReservacionNoEncontradaException();
         }
     }
 
 
-    @Transactional
-    public Boolean disponible(Long id,LocalDate fechaEntrada){
-        Habitacion habitacion=habitacionRepo.findById(id).orElseThrow(()->new HabitacionNoEncontradaException("no se econtro la habitacion con el id "+id));
-        if (habitacion.isEstado()){
-
-            habitacion.setEstado(false);
-            habitacionRepo.save(habitacion);
+    public Boolean available(Habitacion room, LocalDate fechaEntrada){
+        if (room.isEstado()){
+            room.setEstado(false);
+            habitacionRepo.save(room);
             return true;
 
-        }else{
-            if (fechaEntrada.isAfter(habitacion.getReservacion().getFechaSalida())){
-                habitacion.setEstado(false);
-                habitacionRepo.save(habitacion);
-                return true;
-            }else {
-                throw new ReservaNoDisponibleException("no se puede hacer la reservacion ala habitacion con el id "+id);
-            }
+        }else  if (fechaEntrada.isAfter(room.getReservacion().getFechaSalida())) {
+            return true;
         }
+        return false;
+
     }
     //@Transactional
     public void cambiarEstados(Long id) {
-        if (habitacionRepo.existsById(id)){
-            Habitacion habitacion=habitacionRepo.findById(id).get();
+        Optional<Habitacion>room=habitacionRepo.findById(id);
+        if (room.isPresent()){
+            Habitacion habitacion=room.get();
             habitacion.setEstado(true);
             habitacionRepo.save(habitacion);
         }else {
-            throw  new HabitacionNoEncontradaException("no se encontro la habitacion con el id "+id);
+            throw  new HabitacionNoEncontradaException();
         }
     }
 

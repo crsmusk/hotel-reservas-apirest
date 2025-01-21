@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 @RestController
@@ -37,7 +38,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<?>save(@RequestBody ClienteDTO clienteDTO){
+    public ResponseEntity<Void>save(@RequestBody ClienteDTO clienteDTO){
         clienteService.save(clienteDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -48,7 +49,7 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>delete(@PathVariable Long id){
+    public ResponseEntity<Void>delete(@PathVariable Long id){
         clienteService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

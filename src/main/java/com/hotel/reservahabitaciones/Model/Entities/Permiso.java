@@ -1,5 +1,5 @@
 package com.hotel.reservahabitaciones.Model.Entities;
-
+import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "permisos")
 public class Permiso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

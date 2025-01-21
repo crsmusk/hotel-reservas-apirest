@@ -13,7 +13,7 @@ public class HabitacionMapper {
                 .id(habitacion.getId())
                 .tipoHabitacion(habitacion.getTipoHabitacion())
                 .capacidad(habitacion.getCapacidad())
-                .tamaño(habitacion.getTamaño())
+                .tamaño(habitacion.getTamano())
                 .accesibilidad(habitacion.getAccesibilidad())
                 .descripcion(habitacion.getDescripcion())
                 .estado(habitacion.isEstado())
