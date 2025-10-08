@@ -2,7 +2,7 @@
 
 # 🏨 Hotel Reservas API REST
 
-Sistema de gestión hotelera y manejo de reservaciones desarrollado con Spring Boot. Permite al hotel administrar su inventario de habitaciones, gestionar las reservas de los clientes y realizar un seguimiento de las reservaciones. [1](#0-0) 
+Sistema de gestión hotelera y manejo de reservaciones desarrollado con Spring Boot. Permite al hotel administrar su inventario de habitaciones, gestionar las reservas de los clientes y realizar un seguimiento de las reservaciones. [1]
 
 ## 📋 Descripción
 
@@ -12,19 +12,19 @@ Esta API REST proporciona un sistema completo para la administración de hoteles
 - Seguimiento completo del inventario de habitaciones
 - Múltiples tipos y categorías de habitaciones
 - Monitoreo del estado de habitaciones (disponible/ocupada)
-- Búsqueda avanzada por: tipo, capacidad, tamaño, precio, accesibilidad y preferencias [2](#0-1) 
+- Búsqueda avanzada por: tipo, capacidad, tamaño, precio, accesibilidad y preferencias [2]
 
 ### 📅 Sistema de Reservaciones
 - Verificación de disponibilidad en tiempo real
 - Creación y gestión de reservaciones
 - Sistema de reservas basado en fechas
 - Capacidad de cambio de habitación
-- Búsqueda de reservas por fecha de entrada y salida [3](#0-2) 
+- Búsqueda de reservas por fecha de entrada y salida [3]
 
 ### 👥 Gestión de Usuarios
 - Gestión de perfiles de clientes y empleados
 - Control de acceso basado en roles
-- Sistema de permisos [4](#0-3) 
+- Sistema de permisos [4]
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -38,7 +38,7 @@ Esta API REST proporciona un sistema completo para la administración de hoteles
 - **JUnit 5**: Testing
 - **JaCoCo**: Cobertura de código
 - **SonarQube**: Análisis de calidad de código
-- **Docker Compose**: Containerización [5](#0-4) [6](#0-5) [7](#0-6) 
+- **Docker Compose**: Containerización 
 
 ## 📦 Requisitos Previos
 
@@ -97,7 +97,7 @@ docker-compose up -d
 - `GET /hotel/habitaciones/buscar-por-tamaño/{tamano}` - Buscar por tamaño
 - `GET /hotel/habitaciones/buscar-por-precio-mayorQue/{precio}` - Precio mayor que
 - `GET /hotel/habitaciones/buscar-por-precio-menorQue/{precio}` - Precio menor que
-- `GET /hotel/habitaciones/buscar-por-accesibilidad/{accesibilidad}` - Buscar por accesibilidad [9](#0-8) 
+- `GET /hotel/habitaciones/buscar-por-accesibilidad/{accesibilidad}` - Buscar por accesibilidad [9]
 
 ### Reservaciones (`/hotel/reservacion`)
 
@@ -110,7 +110,7 @@ docker-compose up -d
 - `GET /hotel/reservacion/buscar-salida-despues-de/{fecha}` - Salidas después de fecha
 - `GET /hotel/reservacion/buscar-salida-antes-de/{fecha}` - Salidas antes de fecha
 - `PUT /hotel/reservacion/Cambiar-habitacion/{id}/{idHabitacionActual}/{idNuevaHabitacion}/{salida}` - Cambiar habitación
-- `PUT /hotel/reservacion/actualizar-salida/{fecha}` - Actualizar fecha de salida [10](#0-9) 
+- `PUT /hotel/reservacion/actualizar-salida/{fecha}` - Actualizar fecha de salida [10]
 
 ## 🏗️ Estructura del Proyecto
 
@@ -146,5 +146,5 @@ Generar reporte de cobertura con JaCoCo:
 ./mvnw verify
 ```
 
-El reporte se genera en `target/site/jacoco/index.html` [11](#0-10) 
+El reporte se genera en `target/site/jacoco/index.html` [11]
 
