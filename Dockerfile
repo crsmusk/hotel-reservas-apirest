@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.4_7-jdk as build 
+FROM eclipse-temurin:21.0.4_7-jdk as build
 
 WORKDIR /root
 

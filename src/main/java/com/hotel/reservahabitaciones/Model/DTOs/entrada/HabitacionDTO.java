@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 public class HabitacionDTO {
       Long id;
       String tipoHabitacion;
+      int numeroHabitacion;
       String preferencia;
       int capacidad;
       int tamaño;
