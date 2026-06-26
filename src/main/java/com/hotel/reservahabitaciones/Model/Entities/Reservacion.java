@@ -25,11 +25,17 @@ public class Reservacion {
  private LocalDate fechaSalida;
  @ManyToOne
  @JoinColumn(name = "cliente_id")
- Cliente cliente;
+ private Cliente cliente;
 
  @ManyToMany
  @JoinTable(name = "reserva_habitacion",
          joinColumns = @JoinColumn(name = "reserva_id"),
          inverseJoinColumns = @JoinColumn(name = "habitacion_id"))
- List<Habitacion>habitacions;
+ private List<Habitacion> habitacionesActivas;
+
+ @ManyToMany
+ @JoinTable(name = "reserva_habitacion_historial",
+         joinColumns = @JoinColumn(name = "reserva_id"),
+         inverseJoinColumns = @JoinColumn(name = "habitacion_id"))
+ private List<Habitacion> habitacionesAnteriores;
 }

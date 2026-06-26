@@ -19,7 +19,7 @@ public class Rol {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; 
     @Column(name = "nombre_rol")
-    String nombreRol;
+    private String nombreRol;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "rol_permiso",

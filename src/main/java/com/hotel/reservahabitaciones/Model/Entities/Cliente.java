@@ -23,8 +23,9 @@ public class Cliente {
     private String apellido;
     private String dni;
     private String telefono;
+
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    Usuario usuario;
+    private Usuario usuario;
     @OneToMany(mappedBy = "cliente")
-    List<Reservacion>reservaciones;
+    private List<Reservacion> reservaciones;
 }

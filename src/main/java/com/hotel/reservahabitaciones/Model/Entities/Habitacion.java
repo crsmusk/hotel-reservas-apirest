@@ -1,6 +1,5 @@
 package com.hotel.reservahabitaciones.Model.Entities;
 import jakarta.persistence.*;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +19,7 @@ public class Habitacion {
     private Long id;
     @Column(name = "tipo_habitacion")
     private String tipoHabitacion;
+    private int numeroHabitacion;
     private String preferencia;
     private int capacidad;
     private int tamano;
@@ -27,8 +27,6 @@ public class Habitacion {
     private boolean estado;
     private  String descripcion;
     private String accesibilidad;
-
-    @ManyToOne
-    @JoinColumn(name = "reservacion_id")
-    Reservacion reservacion;
+    @Version
+    private Integer version;
 }

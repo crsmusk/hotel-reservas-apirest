@@ -26,11 +26,12 @@ public class Usuario {
     @Column(name = "account_no_locked")
     private Boolean accountNoLocked=true;
     @Column(name = "credential_no_expired")
-    private Boolean credentialNoExprired=true;
-
+    private Boolean credentialNoExpired=true;
+    @Version
+    private Integer version;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuario_rol"
             ,joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "rol_id"))
-    List<Rol>roles;
+    private List<Rol> roles;
 }

@@ -23,5 +23,5 @@ public class Empleado {
     private String dni;
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    Usuario usuario;
+    private Usuario usuario;
 }

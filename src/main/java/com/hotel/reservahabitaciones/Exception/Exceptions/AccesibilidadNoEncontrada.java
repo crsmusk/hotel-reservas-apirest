@@ -1,4 +1,8 @@
 package com.hotel.reservahabitaciones.Exception.Exceptions;
 
-public class AccesibilidadNoEncontrada {
+// TODO: Documentar y utilizar esta excepción en HabitacionServiceImpl.obtenerPorAccesibilidad()
+public class AccesibilidadNoEncontrada extends RuntimeException{
+    public AccesibilidadNoEncontrada(String message) {
+        super(message);
+    }
 }
