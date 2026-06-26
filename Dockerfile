@@ -27,4 +27,4 @@ RUN mkdir -p /root/src && chown pepe:usuarios /root/src
 USER pepe
 
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/root/target/reservahabitaciones-0.0.1-SNAPSHOT.jar"]
