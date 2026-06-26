@@ -1,150 +1,210 @@
 
 
-# 🏨 Hotel Reservas API REST
+# Hotel Reservas API REST
 
-Sistema de gestión hotelera y manejo de reservaciones desarrollado con Spring Boot. Permite al hotel administrar su inventario de habitaciones, gestionar las reservas de los clientes y realizar un seguimiento de las reservaciones. 
+API REST de gestión hotelera para el control de habitaciones, reservas, clientes, empleados y permisos.
 
-## 📋 Descripción
+## Badges
+No hay badges de CI/CD o licencia verificados en el repositorio actual.
 
-Esta API REST proporciona un sistema completo para la administración de hoteles que incluye:
+## Tabla de contenidos
+- [Descripción general](#descripción-general)
+- [Tecnologías y stack](#tecnologías-y-stack)
+- [Requisitos previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Configuración](#configuración)
+- [Ejecución](#ejecución)
+- [Tests](#tests)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Documentación de API](#documentación-de-api)
+- [Decisiones arquitectónicas relevantes](#decisiones-arquitectónicas-relevantes)
+- [Cómo contribuir](#cómo-contribuir)
+- [Licencia](#licencia)
 
-### 🛏️ Gestión de Habitaciones
-- Seguimiento completo del inventario de habitaciones
-- Múltiples tipos y categorías de habitaciones
-- Monitoreo del estado de habitaciones (disponible/ocupada)
-- Búsqueda avanzada por: tipo, capacidad, tamaño, precio, accesibilidad y preferencias 
+## Descripción general
 
-### 📅 Sistema de Reservaciones
-- Verificación de disponibilidad en tiempo real
-- Creación y gestión de reservaciones
-- Sistema de reservas basado en fechas
-- Capacidad de cambio de habitación
-- Búsqueda de reservas por fecha de entrada y salida 
+Hotel Reservas API REST es una aplicación backend construida con Spring Boot 3.3.4 para administrar el inventario de habitaciones, las reservaciones de clientes y el control de roles/permisos en un hotel.
 
-### 👥 Gestión de Usuarios
-- Gestión de perfiles de clientes y empleados
-- Control de acceso basado en roles
-- Sistema de permisos [4]
+El proyecto expone endpoints REST para crear, consultar, actualizar y eliminar recursos clave como habitaciones, reservas, clientes, empleados, roles, permisos y usuarios.
 
-## 🛠️ Tecnologías Utilizadas
-
-- **Java**: 21
-- **Spring Boot**: 3.3.4
-- **Spring Data JPA**: Persistencia de datos
-- **Spring Security**: Autenticación y autorización
-- **MySQL**: 8.0
-- **Lombok**: Reducción de código boilerplate
-- **Maven**: Gestión de dependencias
-- **JUnit 5**: Testing
-- **JaCoCo**: Cobertura de código
-- **SonarQube**: Análisis de calidad de código
-- **Docker Compose**: Containerización 
-
-## 📦 Requisitos Previos
+## Tecnologías y stack
 
 - Java 21
-- Maven 3.6+
-- Docker y Docker Compose (opcional)
-- MySQL 8.0 (si no usas Docker)
+- Spring Boot 3.3.4
+- Spring Data JPA
+- Spring Web
+- Spring Security
+- Spring Validation
+- MySQL 8.0 (runtime)
+- H2 (pruebas)
+- Lombok
+- Maven (wrapper incluido)
+- JUnit 5
+- JaCoCo
+- SonarQube Maven Plugin
+- Docker Compose
 
-## 🚀 Instalación
+## Requisitos previos
 
-### Con Docker Compose
+- JDK 21
+- Maven 3.x o uso del wrapper `./mvnw`
+- MySQL 8.0 para ejecución local con base de datos real
+- Docker y Docker Compose si se ejecuta en contenedor
 
-1. Clona el repositorio:
+## Instalación
+
+1. Clonar el repositorio:
+
 ```bash
-git clone https://github.com/crsmusk/hotel-reservas-apirest.git
+git clone <repository-url>
 cd hotel-reservas-apirest
 ```
 
-2. Configura las variables de entorno en un archivo `.env`:
+> Reemplaza `<repository-url>` con la URL real del repositorio.
+
+2. Compilar el proyecto con el wrapper de Maven:
+
+```bash
+./mvnw clean install
+```
+
+En Windows:
+
+```powershell
+.\mvnw.cmd clean install
+```
+
+### Con Docker Compose
+
+1. Crear una copia de `.env.template` llamada `.env`.
+2. Ajustar las variables de entorno en `.env`.
+3. Levantar el servicio:
+
+```bash
+docker-compose up -d
+```
+
+## Configuración
+
+La aplicación importa variables de entorno desde un archivo `.env` opcional mediante `spring.config.import=optional:file:.env[.properties]`.
+
+Variables principales:
+
 ```env
-SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/apirest
-SPRING_DATASOURCE_USERNAME=root
-SPRING_DATASOURCE_PASSWORD=tu_password
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/apirest?useSSL=false&serverTimezone=UTC
+SPRING_DATASOURCE_USERNAME=<usuario>
+SPRING_DATASOURCE_PASSWORD=<contraseña>
 SPRING_DATASOURCE_DB=apirest
 ```
 
-3. Ejecuta con Docker Compose:
+El archivo `src/main/resources/application.properties` controla la configuración de JPA y el origen de datos:
+
+- `spring.jpa.hibernate.ddl-auto=update`
+- `spring.jpa.open-in-view=false`
+- `spring.datasource.url=${SPRING_DATASOURCE_URL}`
+- `spring.datasource.username=${SPRING_DATASOURCE_USERNAME}`
+- `spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}`
+- `spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect`
+
+## Ejecución
+
+Ejecutar localmente:
+
 ```bash
-docker-compose up -d
-``` [8](#0-7) 
-
-### Sin Docker
-
-1. Configura tu base de datos MySQL
-
-2. Ejecuta con Maven:
-```bash
-./mvnw clean install
 ./mvnw spring-boot:run
 ```
 
-## 📡 Endpoints de la API
+En Windows:
 
-### Habitaciones (`/hotel/habitaciones`)
-
-- `GET /hotel/habitaciones` - Listar todas las habitaciones
-- `GET /hotel/habitaciones/{id}` - Obtener habitación por ID
-- `POST /hotel/habitaciones` - Crear nueva habitación
-- `PUT /hotel/habitaciones/{id}` - Actualizar habitación
-- `DELETE /hotel/habitaciones/{id}` - Eliminar habitación
-- `GET /hotel/habitaciones/buscar-habitacion-por-tipo/{tipo}` - Buscar por tipo
-- `GET /hotel/habitaciones/habitaciones-disponibles` - Habitaciones disponibles
-- `GET /hotel/habitaciones/habitaciones-ocupadas` - Habitaciones ocupadas
-- `GET /hotel/habitaciones/buscar-por-Preferencia/{preferencia}` - Buscar por preferencia
-- `GET /hotel/habitaciones/buscar-por-capacidad/{capacidad}` - Buscar por capacidad
-- `GET /hotel/habitaciones/buscar-por-tamaño/{tamano}` - Buscar por tamaño
-- `GET /hotel/habitaciones/buscar-por-precio-mayorQue/{precio}` - Precio mayor que
-- `GET /hotel/habitaciones/buscar-por-precio-menorQue/{precio}` - Precio menor que
-- `GET /hotel/habitaciones/buscar-por-accesibilidad/{accesibilidad}` - Buscar por accesibilidad 
-
-### Reservaciones (`/hotel/reservacion`)
-
-- `GET /hotel/reservacion` - Listar todas las reservaciones
-- `GET /hotel/reservacion/{id}` - Obtener reservación por ID
-- `POST /hotel/reservacion` - Crear nueva reservación
-- `DELETE /hotel/reservacion/{id}` - Eliminar reservación
-- `GET /hotel/reservacion/buscar-entradas-antes-de/{fecha}` - Entradas antes de fecha
-- `GET /hotel/reservacion/buscar-entradas-despues-de/{fecha}` - Entradas después de fecha
-- `GET /hotel/reservacion/buscar-salida-despues-de/{fecha}` - Salidas después de fecha
-- `GET /hotel/reservacion/buscar-salida-antes-de/{fecha}` - Salidas antes de fecha
-- `PUT /hotel/reservacion/Cambiar-habitacion/{id}/{idHabitacionActual}/{idNuevaHabitacion}/{salida}` - Cambiar habitación
-- `PUT /hotel/reservacion/actualizar-salida/{fecha}` - Actualizar fecha de salida 
-
-## 🏗️ Estructura del Proyecto
-
-```
-src/main/java/com/hotel/reservahabitaciones/
-├── Controller/          # Controladores REST
-│   ├── ClienteController.java
-│   ├── EmpleadoController.java
-│   ├── HabitacionController.java
-│   ├── PermisoController.java
-│   ├── ReservacionController.java
-│   ├── RolController.java
-│   └── UsuarioController.java
-├── Model/              # Modelos y DTOs
-│   ├── DTOs/
-│   └── Entities/
-├── Repository/         # Repositorios JPA
-├── Service/           # Lógica de negocio
-├── Mapper/            # Mapeo de entidades a DTOs
-├── Security/          # Configuración de seguridad
-└── Exception/         # Manejo de excepciones
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
-## 🧪 Testing
+Con Docker Compose:
 
-Ejecutar tests:
+```bash
+docker-compose up -d
+```
+
+## Tests
+
+Ejecutar la suite de pruebas unitarias e de integración:
+
 ```bash
 ./mvnw test
 ```
 
-Generar reporte de cobertura con JaCoCo:
+Generar el reporte de cobertura con JaCoCo:
+
 ```bash
 ./mvnw verify
 ```
 
-El reporte se genera en `target/site/jacoco/index.html` 
+El reporte de cobertura se escribe en:
+
+```text
+target/site/jacoco/index.html
+```
+
+## Estructura del proyecto
+
+```
+src/main/java/com/hotel/reservahabitaciones/
+├── Controller/          # Controladores REST
+├── Exception/           # Manejo de excepciones y handler global
+├── Mapper/              # Mapstruct / mapeo entre DTOs y entidades
+├── Model/
+│   ├── DTOs/            # DTOs de entrada y salida
+│   └── Entities/        # Entidades JPA
+├── Repository/          # Repositorios Spring Data JPA
+├── Securiy/             # Configuración de seguridad
+└── Service/
+    ├── Impl/            # Implementaciones de servicios
+    └── Interface/       # Interfaces de servicio
+
+src/main/resources/
+├── application.properties
+├── .env.template        # Variables de entorno de ejemplo
+
+docker-compose.yml
+pom.xml
+README.md
+docs/ARCHITECTURE.md   # Documentación de arquitectura interna
+```
+
+## Documentación de API
+
+No se detectó configuración de Swagger/OpenAPI en el código fuente actual. La documentación de API se debe complementar con una definición OpenAPI si se desea soporte de documentación autoservicio.
+
+### Endpoints principales
+
+- `/hotel/habitaciones` — CRUD y búsquedas de habitaciones
+- `/hotel/reservacion` — CRUD, búsqueda por fechas, cambio de habitación y actualización de salida
+- `/hotel/clientes` — CRUD y búsqueda de clientes
+- `/hotel/empleados` — CRUD y búsqueda de empleados
+- `/hotel/roles` — CRUD y gestión de permisos de roles
+- `/hotel/permisos` — CRUD y búsqueda de permisos
+- `/hotel/usuarios` — CRUD de usuarios y gestión de roles/contraseñas
+
+## Decisiones arquitectónicas relevantes
+
+- Arquitectura en capas: `Controller` → `Service` → `Repository` → `Model`.
+- La entidad `Reservacion` gestiona habitaciones activas y habitaciones anteriores mediante relaciones JPA y consultas específicas.
+- La consulta JPQL `findOverlappingReservation` evita dependencias inversas complejas en la relación entre `Reservacion` y `Habitacion`.
+- Se emplea `@Lock(LockModeType.PESSIMISTIC_WRITE)` en el repositorio para garantizar consistencia en la reserva de habitaciones.
+- `spring.jpa.open-in-view` está deshabilitado, lo que favorece la detección temprana de problemas de carga perezosa.
+
+Más detalle en `docs/ARCHITECTURE.md`.
+
+## Cómo contribuir
+
+1. Crear un branch con un nombre descriptivo.
+2. Ejecutar pruebas con `./mvnw test` antes de enviar cambios.
+3. Abrir un pull request contra la rama principal del repositorio.
+
+[PENDIENTE: convención de ramas y convención de commits del equipo]
+
+## Licencia
+
+[PENDIENTE: licencia no especificada en el repositorio actual]
 
