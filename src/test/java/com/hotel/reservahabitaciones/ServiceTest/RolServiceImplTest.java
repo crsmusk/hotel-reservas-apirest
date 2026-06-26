@@ -9,46 +9,49 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.RolDto;
 import com.hotel.reservahabitaciones.Service.Impl.RolServiceImpl;
 @Sql(scripts = "/scripts/inicializar_datos_para_rol_srvc.sql",executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @SpringBootTest
+@Transactional
 public class RolServiceImplTest {
 
     @Autowired
     public RolServiceImpl service;
 
-    public RolDTO esperado=new RolDTO(1L,"Admin",List.of("CREAR_USUARIO","EDITAR_USUARIO"));
+    public RolDto esperado=new RolDto(1L,"Admin",List.of("CREAR_USUARIO","EDITAR_USUARIO"));
 
     @Test
     void testGetAll(){
-        List<RolDTO>obtenido=service.getAll();
+        List<RolDto>obtenido=service.obtenerTodos();
         assertTrue(obtenido.contains(esperado));
     }
     @Test
     void testGetById(){
-        RolDTO obtenido=service.getById(1L);
+        RolDto obtenido=service.obtenerPorId(1L);
         assertEquals(esperado, obtenido);
     }
     @Test
     void testGetByNombre(){
-        RolDTO obtenido=service.getByName("Admin");
+        RolDto obtenido=service.obtenerPorNombre("Admin");
         assertEquals(esperado, obtenido);
     }
     @Test
     void testUpdatePermissions(){
-        esperado.setPermisos(List.of("VER_REPORTES"));
-        service.updatePermissions(1L,List.of("VER_REPORTES") );
-        RolDTO obtenido=service.getById(1L);
-        assertEquals(esperado, obtenido);
+        RolDto esperadoActualizado = new RolDto(1L, "Admin", List.of("VER_REPORTES"));
+        service.actualizarPermisos(1L,List.of("VER_REPORTES") );
+        RolDto obtenido=service.obtenerPorId(1L);
+        assertEquals(esperadoActualizado, obtenido);
     }
     @Test
     void testUpdateName(){
-        esperado.setNombre("GERENTE");
-        service.updateName(1L, esperado);
-        RolDTO obtenido=service.getById(1L);
-        assertEquals(esperado, obtenido);
+        RolDto esperadoActualizado = new RolDto(1L, "GERENTE", List.of("CREAR_USUARIO","EDITAR_USUARIO"));
+        service.actualizarNombre(1L, esperadoActualizado);
+        RolDto obtenido=service.obtenerPorId(1L);
+        assertEquals(esperadoActualizado, obtenido);
     }
     
 }
+

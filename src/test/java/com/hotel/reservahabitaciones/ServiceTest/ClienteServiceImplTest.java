@@ -12,8 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import com.hotel.reservahabitaciones.Exception.Exceptions.UsuarioNoEncontradoException;
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.ClienteDto;
+import com.hotel.reservahabitaciones.Model.DTOs.salida.ClienteSimplificadoDto;
 import com.hotel.reservahabitaciones.Service.Impl.ClienteServiceImpl;
+
 @Sql(scripts = "/scripts/inicializar_datos_para_clientes_srvc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @SpringBootTest
 public class ClienteServiceImplTest {
@@ -22,49 +24,57 @@ public class ClienteServiceImplTest {
  @Autowired
  private ClienteServiceImpl service;
  
- 
 
- private  ClienteDTO clienteDTO=new ClienteDTO(1L,"Juan","Pérez","123456789","5551234567","cliente@example.com","password_encriptado");
+ private  ClienteSimplificadoDto clienteEsperado=new ClienteSimplificadoDto(1L,"Juan","Pérez","cliente@example.com","5551234567");
+ private  ClienteDto ClienteDto=new ClienteDto(1L,"Juan","Pérez","123456789","5551234567","cliente@example.com","password_encriptado");
 
  
   
  @Test
   void testGetAll() {
-  List<ClienteDTO>obtenido=service.getAll();
-  List<ClienteDTO>esperado=List.of(clienteDTO);
+  List<ClienteSimplificadoDto>obtenido=service.obtenerTodos();
+  List<ClienteSimplificadoDto>esperado=List.of(clienteEsperado);
   assertEquals(esperado.getFirst().getNombre(),obtenido.getFirst().getNombre());
 
 
  }
  @Test
  void testGetById(){
-  ClienteDTO obtnenido=service.getById(1L);
+  ClienteSimplificadoDto obtnenido=service.obtenerPorId(1L);
   assertNotNull(obtnenido);
-  assertEquals(clienteDTO,obtnenido);
+  assertEquals(clienteEsperado,obtnenido);
  }
 
  @Test
  void testGetByName(){
-  List<ClienteDTO>obtenido=service.getByName("Juan");
-  List<ClienteDTO>esperado=List.of(clienteDTO);
+  List<ClienteSimplificadoDto>obtenido=service.obtenerPorNombre("Juan");
+  List<ClienteSimplificadoDto>esperado=List.of(clienteEsperado);
   assertNotNull(obtenido);
   assertEquals(esperado,obtenido);
  }
 
  @Test
  void testGetByLastName(){
-  List<ClienteDTO>obtenido=service.getByLastName("Pérez");
-  List<ClienteDTO>esperado=List.of(clienteDTO);
+  List<ClienteSimplificadoDto>obtenido=service.obtenerPorApellido("Pérez");
+  List<ClienteSimplificadoDto>esperado=List.of(clienteEsperado);
   assertNotNull(obtenido);
   assertEquals(esperado,obtenido);
  }
 
  @Test
  void testUpdate(){
-  clienteDTO.setNombre("marco");
-  ClienteDTO optenido=service.update(1L,clienteDTO);
+  ClienteDto clienteActualizado = new ClienteDto(
+      1L,
+      "marco",
+      "Pérez",
+      "123456789",
+      "5551234567",
+      "cliente@example.com",
+      "password_encriptado"
+  );
+  ClienteSimplificadoDto optenido = service.actualizar(1L, clienteActualizado);
   assertNotNull(optenido);
-  assertEquals(clienteDTO,optenido);
+  assertEquals("marco", optenido.getNombre());
  }
 
 
@@ -72,12 +82,12 @@ public class ClienteServiceImplTest {
   void  testUsuarioNoEncontradoException(){
 
   assertThrows(UsuarioNoEncontradoException.class, ()->{
-    service.getById(44L);
+    service.obtenerPorId(44L);
   } );
  }
 
 
 
 
-
 }
+
