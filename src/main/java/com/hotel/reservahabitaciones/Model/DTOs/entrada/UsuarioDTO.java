@@ -1,4 +1,4 @@
-package com.hotel.reservahabitaciones.Model.DTOs;
+package com.hotel.reservahabitaciones.Model.DTOs.entrada;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UsuarioDTO {
-    Long id;
-    String email;
-    String password;
-    List<String>roles;
+public class UsuarioDto {
+    private Long id;
+    private String email;
+    private String password;
+    private List<String>roles;
 }

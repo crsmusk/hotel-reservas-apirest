@@ -1,20 +1,17 @@
-package com.hotel.reservahabitaciones.Model.DTOs;
+package com.hotel.reservahabitaciones.Model.DTOs.entrada;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class ClienteDTO {
-     Long id;
-     String nombre;
-     String apellido;
-     String dni;
-     String telefono;
-     String email;
-     String password;
-}
+public record ClienteDto(
+    Long id,
+    @NotBlank(message = "El nombre es obligatorio") String nombre,
+    @NotBlank(message = "El apellido es obligatorio") String apellido,
+    @NotBlank(message = "El DNI es obligatorio") String dni,
+    @NotBlank(message = "El teléfono es obligatorio") String telefono,
+    @NotBlank(message = "El email es obligatorio") @Email(message = "Formato de email inválido") String email,
+    @NotBlank(message = "La contraseña es obligatoria") String password
+) {}

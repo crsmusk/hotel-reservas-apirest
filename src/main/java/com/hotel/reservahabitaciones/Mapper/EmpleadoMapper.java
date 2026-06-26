@@ -1,6 +1,6 @@
 package com.hotel.reservahabitaciones.Mapper;
 
-import com.hotel.reservahabitaciones.Model.DTOs.EmpleadoDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.EmpleadoDto;
 import com.hotel.reservahabitaciones.Model.Entities.Empleado;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +9,8 @@ import java.util.List;
 @Component
 public class EmpleadoMapper {
 
-    public EmpleadoDTO empleadoAEmpleadoDto(Empleado empleado){
-        EmpleadoDTO empleadoDTO=EmpleadoDTO.builder()
+    public EmpleadoDto empleadoAEmpleadoDto(Empleado empleado){
+        EmpleadoDto empleadoDto = EmpleadoDto.builder()
                 .nombre(empleado.getNombre())
                 .apellido(empleado.getApellido())
                 .dni(empleado.getDni())
@@ -20,10 +20,11 @@ public class EmpleadoMapper {
                 .telefono(empleado.getTelefono())
                 .puesto(empleado.getPuesto())
                 .build();
-        return empleadoDTO;
+        return empleadoDto;
     }
 
-    public List<EmpleadoDTO>empleadosAEmpladosDto(List<Empleado>empleados){
+    public List<EmpleadoDto>empleadosAEmpleadosDto(List<Empleado>empleados){
         return  empleados.stream().map(this::empleadoAEmpleadoDto).toList();
     }
 }
+

@@ -1,6 +1,6 @@
 package com.hotel.reservahabitaciones.Mapper;
 
-import com.hotel.reservahabitaciones.Model.DTOs.PermisoDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.PermisoDto;
 import com.hotel.reservahabitaciones.Model.Entities.Permiso;
 import org.springframework.stereotype.Component;
 
@@ -9,15 +9,16 @@ import java.util.List;
 @Component
 public class PermisoMapper {
 
-    public PermisoDTO permisoAPermisoDto(Permiso permiso){
-        PermisoDTO permisoDTO=PermisoDTO.builder()
+    public PermisoDto permisoAPermisoDto(Permiso permiso){
+        PermisoDto permisoDto = PermisoDto.builder()
                 .nombre(permiso.getNombrePermiso())
                 .id(permiso.getId())
                 .build();
-        return  permisoDTO;
+        return permisoDto;
     }
 
-    public List<PermisoDTO>permisosAPermisosDto(List<Permiso>permisos){
+    public List<PermisoDto>permisosAPermisosDto(List<Permiso>permisos){
         return permisos.stream().map(this::permisoAPermisoDto).toList();
     }
 }
+

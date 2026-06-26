@@ -1,4 +1,4 @@
-package com.hotel.reservahabitaciones.Model.DTOs;
+package com.hotel.reservahabitaciones.Model.DTOs.entrada;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,16 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HabitacionDTO {
-      Long id;
-      String tipoHabitacion;
-      int numeroHabitacion;
-      String preferencia;
-      int capacidad;
-      int tamaño;
-      BigDecimal precioNoche;
-      boolean estado;
-      String descripcion;
-      String accesibilidad;
+public class HabitacionDto {
+    private Long id;
+    private String tipoHabitacion;
+    private int numeroHabitacion;
+    private String preferencia;
+    private int capacidad;
+    private int tamaño;
+    private BigDecimal precioNoche;
+    private boolean estado;
+    private String descripcion;
+    private String accesibilidad;
 }
+

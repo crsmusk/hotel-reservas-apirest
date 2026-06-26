@@ -1,4 +1,4 @@
-package com.hotel.reservahabitaciones.Model.DTOs;
+package com.hotel.reservahabitaciones.Model.DTOs.entrada;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PermisoDTO {
-    Long id;
-    String nombre;
+public class PermisoDto {
+    private Long id;
+    private String nombre;
 }
+
