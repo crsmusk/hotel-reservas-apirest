@@ -1,15 +1,16 @@
 package com.hotel.reservahabitaciones.Service.Interface;
 
-import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.RolDto;
 
 import java.util.List;
 
 public interface IRol {
-    public List<RolDTO>getAll();
-    public RolDTO getById(Long id);
-    public RolDTO getByName(String nombre);
-    public RolDTO updateName(Long id, RolDTO rolDTO);
-    public void save(RolDTO rolDTO);
-    public void delete(Long id);
-    public RolDTO updatePermissions(Long id, List<String>permisos);
+    public List<RolDto>obtenerTodos();
+    public RolDto obtenerPorId(Long id);
+    public RolDto obtenerPorNombre(String nombre);
+    public RolDto actualizarNombre(Long id, RolDto RolDto);
+    public void guardar(RolDto RolDto);
+    public void eliminar(Long id);
+    public RolDto actualizarPermisos(Long id, List<String>permisos);
 }
+

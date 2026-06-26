@@ -1,16 +1,17 @@
 package com.hotel.reservahabitaciones.Service.Interface;
 
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
-import com.hotel.reservahabitaciones.Model.DTOs.EmpleadoDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.EmpleadoDto;
 
 import java.util.List;
 
 public interface IEmpleado {
-    public List<EmpleadoDTO> getAll();
-    public EmpleadoDTO getById(Long id);
-    public List<EmpleadoDTO>getByName(String nombre);
-    public List<EmpleadoDTO>getByLastName(String apellido);
-    public void save(EmpleadoDTO empleadoDTO);
-    public EmpleadoDTO update(Long id,EmpleadoDTO empleadoDTO);
-    public void delete(Long id);
+    public List<EmpleadoDto> obtenerTodos();
+    public EmpleadoDto obtenerPorId(Long id);
+    public List<EmpleadoDto>obtenerPorNombre(String nombre);
+    public List<EmpleadoDto>obtenerPorApellido(String apellido);
+    public void guardar(EmpleadoDto EmpleadoDto);
+    public EmpleadoDto actualizar(Long id,EmpleadoDto EmpleadoDto);
+    public void eliminar(Long id);
+    public void cambiarPuesto(Long id,String puesto);
 }
+

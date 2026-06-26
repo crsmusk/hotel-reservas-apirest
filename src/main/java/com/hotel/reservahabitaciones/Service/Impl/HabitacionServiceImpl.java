@@ -1,53 +1,52 @@
 package com.hotel.reservahabitaciones.Service.Impl;
 
 import com.hotel.reservahabitaciones.Exception.Exceptions.HabitacionNoEncontradaException;
+import com.hotel.reservahabitaciones.Exception.Exceptions.HabitacionYaExisteException;
 import com.hotel.reservahabitaciones.Mapper.HabitacionMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.HabitacionDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.HabitacionDto;
 import com.hotel.reservahabitaciones.Model.Entities.Habitacion;
 import com.hotel.reservahabitaciones.Repository.HabitacionRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IHabitacion;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HabitacionServiceImpl implements IHabitacion {
 
 
     private HabitacionRepository habitacionRepo;
-    @Autowired
-    public void setHabitacionRepo(HabitacionRepository habitacionRepo){
-        this.habitacionRepo=habitacionRepo;
-    }
-
     private HabitacionMapper mapper;
-    @Autowired
-    public void setMapper(HabitacionMapper mapper){
-        this.mapper=mapper;
+
+    public HabitacionServiceImpl(HabitacionRepository habitacionRepo, HabitacionMapper mapper) {
+        this.habitacionRepo = habitacionRepo;
+        this.mapper = mapper;
     }
 
     @Override
-    public List<HabitacionDTO> getAll() {
-        if(habitacionRepo.findAll().isEmpty()){
-            throw new HabitacionNoEncontradaException();
+    public List<HabitacionDto> obtenerTodos() {
+        List<Habitacion>habitaciones=habitacionRepo.findAll();
+        if(habitaciones.isEmpty()){
+           return List.of();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findAll());
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public HabitacionDTO getById(Long id) {
-        if (habitacionRepo.existsById(id)){
-            return mapper.habitacionAHabitacionDto(habitacionRepo.findById(id).get());
+    public HabitacionDto obtenerPorId(Long id) {
+        Optional<Habitacion>habitacion=habitacionRepo.findById(id);
+        if (habitacion.isPresent()){
+            return mapper.habitacionAHabitacionDto(habitacion.get());
         }else{
             throw new HabitacionNoEncontradaException();
         }
     }
 
     @Override
-    public List<HabitacionDTO> getByTypeRoom(String tipo) {
+    public List<HabitacionDto> obtenerPorTipoHabitacion(String tipo) {
         List<Habitacion>habitaciones=habitacionRepo.findByTipoHabitacionContainingIgnoreCase(tipo);
         if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
@@ -57,70 +56,77 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public List<HabitacionDTO> getByPreference(String preferencia) {
-        if (habitacionRepo.findByPreferenciaContainingIgnoreCase(preferencia).isEmpty()){
+    public List<HabitacionDto> obtenerPorPreferencia(String preferencia) {
+        List<Habitacion>habitaciones=habitacionRepo.findByPreferenciaContainingIgnoreCase(preferencia);
+        if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByPreferenciaContainingIgnoreCase(preferencia));
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public List<HabitacionDTO> getByCapacity(int capacidad) {
-        if (habitacionRepo.findByCapacidadGreaterThanEqual(capacidad).isEmpty()){
+    public List<HabitacionDto> obtenerPorCapacidad(int capacidad) {
+        List<Habitacion>habitaciones=habitacionRepo.findByCapacidadGreaterThanEqual(capacidad);
+        if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByCapacidadGreaterThanEqual(capacidad));
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public List<HabitacionDTO> getBySize(int tamano) {
-        if (habitacionRepo.findByTamanoGreaterThanEqual(tamano).isEmpty()){
+    public List<HabitacionDto> obtenerPorTamano(int tamano) {
+        List<Habitacion>habitaciones=habitacionRepo.findByTamanoGreaterThanEqual(tamano);
+        if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByTamanoGreaterThanEqual(tamano));
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public List<HabitacionDTO> getByPriceLessThan(BigDecimal precio) {
-        if (habitacionRepo.findByPrecioNocheLessThanEqual(precio).isEmpty()){
+    public List<HabitacionDto> obtenerPorPrecioMenorQue(BigDecimal precio) {
+        List<Habitacion>habitaciones=habitacionRepo.findByPrecioNocheLessThanEqual(precio);
+        if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
         }else {
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByPrecioNocheLessThanEqual(precio));
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public List<HabitacionDTO> getByPriceGreaterThan(BigDecimal precio) {
-        if (habitacionRepo.findByPrecioNocheGreaterThanEqual(precio).isEmpty()){
+    public List<HabitacionDto> obtenerPorPrecioMayorQue(BigDecimal precio) {
+        List<Habitacion>habitaciones=habitacionRepo.findByPrecioNocheGreaterThanEqual(precio);
+        if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
         }else{
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByPrecioNocheGreaterThanEqual(precio));
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public List<HabitacionDTO> getByRoomAvailable() {
-       if (habitacionRepo.findByEstadoTrue().isEmpty()){
+    public List<HabitacionDto> obtenerHabitacionesDisponibles() {
+       List<Habitacion>habitaciones=habitacionRepo.findByEstadoTrue();
+       if (habitaciones.isEmpty()){
            throw new HabitacionNoEncontradaException();
        }else{
-           return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByEstadoTrue());
+           return mapper.habitacionesAHabitacionesDto(habitaciones);
        }
     }
 
     @Override
-    public List<HabitacionDTO> getByRoomUnaVailable() {
-        if (habitacionRepo.findByEstadoFalse().isEmpty()){
+    public List<HabitacionDto> obtenerHabitacionesNoDisponibles() {
+        List<Habitacion>habitaciones=habitacionRepo.findByEstadoFalse();
+        if (habitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
         }else {
-            return mapper.habitacionesAHabitacionesDto(habitacionRepo.findByEstadoFalse());
+            return mapper.habitacionesAHabitacionesDto(habitaciones);
         }
     }
 
     @Override
-    public List<HabitacionDTO> getByAccesibility(String accesibilidad) {
+    public List<HabitacionDto> obtenerPorAccesibilidad(String accesibilidad) {
         List<Habitacion>listaHabitaciones=habitacionRepo.findByAccesibilidadContainingIgnoreCase(accesibilidad);
         if (listaHabitaciones.isEmpty()){
             throw new HabitacionNoEncontradaException();
@@ -130,33 +136,39 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public void save(HabitacionDTO habitacionDTO) {
-        Habitacion habitacion=new Habitacion();
-        habitacion.setEstado(habitacionDTO.isEstado());
-        habitacion.setTipoHabitacion(habitacionDTO.getTipoHabitacion());
-        habitacion.setAccesibilidad(habitacionDTO.getAccesibilidad());
-        habitacion.setCapacidad(habitacionDTO.getCapacidad());
-        habitacion.setDescripcion(habitacionDTO.getDescripcion());
-        habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
-        habitacion.setPreferencia(habitacionDTO.getPreferencia());
-        habitacion.setTamano(habitacionDTO.getTamaño());
+    public void guardar(HabitacionDto HabitacionDto) {
+        if (habitacionRepo.existsByNumeroHabitacion(HabitacionDto.getNumeroHabitacion())) {
+            throw new HabitacionNoEncontradaException();
+        } 
+        Habitacion habitacion= new Habitacion();
+        habitacion.setEstado(HabitacionDto.isEstado());
+        habitacion.setTipoHabitacion(HabitacionDto.getTipoHabitacion());
+        habitacion.setNumeroHabitacion(HabitacionDto.getNumeroHabitacion());
+        habitacion.setAccesibilidad(HabitacionDto.getAccesibilidad());
+        habitacion.setCapacidad(HabitacionDto.getCapacidad());
+        habitacion.setDescripcion(HabitacionDto.getDescripcion());
+        habitacion.setPrecioNoche(HabitacionDto.getPrecioNoche());
+        habitacion.setPreferencia(HabitacionDto.getPreferencia());
+        habitacion.setTamano(HabitacionDto.getTamaño());
+
         habitacionRepo.save(habitacion);
     }
 
     @Override
-    public HabitacionDTO update(Long id, HabitacionDTO habitacionDTO) {
-        if (habitacionRepo.existsById(id)){
-            Habitacion habitacion=habitacionRepo.findById(id).get();
-            habitacion.setEstado(habitacionDTO.isEstado());
-            habitacion.setTipoHabitacion(habitacionDTO.getTipoHabitacion());
-            habitacion.setAccesibilidad(habitacionDTO.getAccesibilidad());
-            habitacion.setCapacidad(habitacionDTO.getCapacidad());
-            habitacion.setDescripcion(habitacionDTO.getDescripcion());
-            habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
-            habitacion.setPreferencia(habitacionDTO.getPreferencia());
-            habitacion.setTamano(habitacionDTO.getTamaño());
-            habitacionRepo.save(habitacion);
-            return mapper.habitacionAHabitacionDto(habitacion);
+    public HabitacionDto actualizar(Long id, HabitacionDto HabitacionDto) {
+        Optional<Habitacion> habitacion=habitacionRepo.findById(id);
+        if (habitacion.isPresent()){
+            habitacion.get().setEstado(HabitacionDto.isEstado());
+            habitacion.get().setTipoHabitacion(HabitacionDto.getTipoHabitacion());
+            habitacion.get().setNumeroHabitacion(HabitacionDto.getNumeroHabitacion());
+            habitacion.get().setAccesibilidad(HabitacionDto.getAccesibilidad());
+            habitacion.get().setCapacidad(HabitacionDto.getCapacidad());
+            habitacion.get().setDescripcion(HabitacionDto.getDescripcion());
+            habitacion.get().setPrecioNoche(HabitacionDto.getPrecioNoche());
+            habitacion.get().setPreferencia(HabitacionDto.getPreferencia());
+            habitacion.get().setTamano(HabitacionDto.getTamaño());
+            habitacionRepo.save(habitacion.get());
+            return mapper.habitacionAHabitacionDto(habitacion.get());
         }else {
             throw new HabitacionNoEncontradaException();
         }
@@ -164,7 +176,7 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
     @Override
-    public void delete(Long id) {
+    public void eliminar(Long id) {
       if (habitacionRepo.existsById(id)){
           habitacionRepo.deleteById(id);
       }else{
@@ -173,3 +185,4 @@ public class HabitacionServiceImpl implements IHabitacion {
     }
 
 }
+

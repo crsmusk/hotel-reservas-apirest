@@ -19,7 +19,7 @@ public class UserDetailService implements UserDetailsService {
 
    private UsuarioRepository usuarioRepo;
    @Autowired
-   public void setUsuarioRepo(UsuarioRepository usuarioRepo){
+   public void establecerRepositorioUsuario(UsuarioRepository usuarioRepo){
        this.usuarioRepo=usuarioRepo;
    }
 
@@ -36,6 +36,6 @@ public class UserDetailService implements UserDetailsService {
         return new User(usuario.getEmail(),
                 usuario.getPassword(),usuario.getIsEnable(),
                 usuario.getAccountNoExpired(),usuario.getAccountNoLocked(),
-                usuario.getCredentialNoExprired(),listAuthorities);
+                usuario.getCredentialNoExpired(),listAuthorities);
     }
 }

@@ -1,24 +1,25 @@
 package com.hotel.reservahabitaciones.Service.Interface;
 
-import com.hotel.reservahabitaciones.Model.DTOs.HabitacionDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.HabitacionDto;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface IHabitacion {
-    public List<HabitacionDTO>getAll();
-    public HabitacionDTO getById(Long id);
-    public List<HabitacionDTO>getByTypeRoom(String tipo);
-    public List<HabitacionDTO> getByPreference(String preferencia);
-    public List<HabitacionDTO>getByCapacity(int capacidad);
-    public List<HabitacionDTO> getBySize(int tamaño);
-    public List<HabitacionDTO> getByPriceLessThan(BigDecimal precio);
-    public List<HabitacionDTO> getByPriceGreaterThan(BigDecimal precio);
-    public List<HabitacionDTO> getByRoomAvailable();
-    public List<HabitacionDTO> getByRoomUnaVailable();
-    public List<HabitacionDTO> getByAccesibility(String accesibilidad);
-    public void save(HabitacionDTO habitacionDTO);
-    public HabitacionDTO update(Long id,HabitacionDTO habitacionDTO);
-    public void delete(Long id);
+    public List<HabitacionDto>obtenerTodos();
+    public HabitacionDto obtenerPorId(Long id);
+    public List<HabitacionDto>obtenerPorTipoHabitacion(String tipo);
+    public List<HabitacionDto> obtenerPorPreferencia(String preferencia);
+    public List<HabitacionDto>obtenerPorCapacidad(int capacidad);
+    public List<HabitacionDto> obtenerPorTamano(int tamaño);
+    public List<HabitacionDto> obtenerPorPrecioMenorQue(BigDecimal precio);
+    public List<HabitacionDto> obtenerPorPrecioMayorQue(BigDecimal precio);
+    public List<HabitacionDto> obtenerHabitacionesDisponibles();
+    public List<HabitacionDto> obtenerHabitacionesNoDisponibles();
+    public List<HabitacionDto> obtenerPorAccesibilidad(String accesibilidad);
+    public void guardar(HabitacionDto HabitacionDto);
+    public HabitacionDto actualizar(Long id,HabitacionDto HabitacionDto);
+    public void eliminar(Long id);
 
 }
+

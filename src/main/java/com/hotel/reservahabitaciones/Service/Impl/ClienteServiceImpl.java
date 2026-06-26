@@ -2,13 +2,14 @@ package com.hotel.reservahabitaciones.Service.Impl;
 
 import com.hotel.reservahabitaciones.Exception.Exceptions.UsuarioNoEncontradoException;
 import com.hotel.reservahabitaciones.Mapper.ClienteMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.ClienteDto;
+import com.hotel.reservahabitaciones.Model.DTOs.salida.ClienteSimplificadoDto;
 import com.hotel.reservahabitaciones.Model.Entities.Cliente;
 import com.hotel.reservahabitaciones.Model.Entities.Usuario;
 import com.hotel.reservahabitaciones.Repository.ClienteRepository;
 import com.hotel.reservahabitaciones.Repository.UsuarioRepository;
 import com.hotel.reservahabitaciones.Service.Interface.ICliente;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hotel.reservahabitaciones.Service.Interface.IUsuario;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,77 +20,68 @@ import java.util.Optional;
 public class ClienteServiceImpl implements ICliente {
 
     private ClienteRepository clienteRepo;
-    @Autowired
-    public void setClienteRepositorio(ClienteRepository clienteRepo) {
-        this.clienteRepo = clienteRepo;
-    }
-
-    private  UsuarioServiceImpl usuarioService;
-    @Autowired
-    public void setUsuarioService(UsuarioServiceImpl usuarioService) {
-        this.usuarioService = usuarioService;
-    }
-
+    private  IUsuario usuarioService;
     private UsuarioRepository usuarioRepo;
-    @Autowired
-    public void setUsuarioRepo(UsuarioRepository usuarioRepo) {
-        this.usuarioRepo = usuarioRepo;
-    }
-
     private ClienteMapper mapper;
-    @Autowired
-    public void setMapper(ClienteMapper mapper) {
+
+    public ClienteServiceImpl(ClienteRepository clienteRepo, IUsuario usuarioService, UsuarioRepository usuarioRepo, ClienteMapper mapper) {
+        this.clienteRepo = clienteRepo;
+        this.usuarioService = usuarioService;
+        this.usuarioRepo = usuarioRepo;
         this.mapper = mapper;
     }
 
-
     @Override
-    public List<ClienteDTO> getAll() {
-        if(clienteRepo.findAll().isEmpty()){
-            throw new UsuarioNoEncontradoException();
+    public List<ClienteSimplificadoDto> obtenerTodos() {
+        List<Cliente> clientes=clienteRepo.findAll();
+        if(clientes.isEmpty()){
+           return List.of();
         }else{
-            return mapper.clientesAClientesDto(clienteRepo.findAll());
+            return mapper.clientesAClientesDto(clientes);
         }
     }
 
     @Override
-    public ClienteDTO getById(Long id) {
-        if (clienteRepo.existsById(id)){
-            return mapper.clienteAClinenteDto(clienteRepo.findById(id).get());
+    public ClienteSimplificadoDto obtenerPorId(Long id) {
+        Optional<Cliente> cliente=clienteRepo.findById(id);
+        if (cliente.isPresent()){
+            return mapper.clienteAClienteDto(cliente.get());
         }else{
             throw new UsuarioNoEncontradoException();
         }
     }
 
     @Override
-    public List<ClienteDTO> getByName(String nombre) {
-        if(clienteRepo.findByNombreIgnoreCase(nombre).isEmpty()){
+    public List<ClienteSimplificadoDto> obtenerPorNombre(String nombre) {
+        List<Cliente>clientes=clienteRepo.findByNombreIgnoreCase(nombre);
+        if(clientes.isEmpty()){
             throw new UsuarioNoEncontradoException();
         }else {
-            return mapper.clientesAClientesDto(clienteRepo.findByNombreIgnoreCase(nombre));
+            return mapper.clientesAClientesDto(clientes);
         }
     }
 
     @Override
-    public List<ClienteDTO> getByLastName(String apellido) {
-        if (clienteRepo.findByApellidoIgnoreCase(apellido).isEmpty()){
+    public List<ClienteSimplificadoDto> obtenerPorApellido(String apellido) {
+        List<Cliente>clientes=clienteRepo.findByApellidoIgnoreCase(apellido);
+        if (clientes.isEmpty()){
             throw new UsuarioNoEncontradoException();
         }else{
-            return mapper.clientesAClientesDto(clienteRepo.findByApellidoIgnoreCase(apellido));
+            return mapper.clientesAClientesDto(clientes);
         }
     }
 
     @Override
     @Transactional
-    public void save(ClienteDTO clienteDTO) {
-
+    public void guardar(ClienteDto ClienteDto) {
         Cliente cliente=new Cliente();
-        cliente.setApellido(clienteDTO.getApellido());
-        cliente.setNombre(clienteDTO.getNombre());
-        cliente.setDni(clienteDTO.getDni());
-        cliente.setTelefono(clienteDTO.getTelefono());
-        usuarioService.registerCustommer(clienteDTO);
-        Optional<Usuario>usuario=usuarioRepo.findByEmailIgnoreCase(clienteDTO.getEmail());
+
+        cliente.setApellido(ClienteDto.apellido());
+        cliente.setNombre(ClienteDto.nombre());
+        cliente.setDni(ClienteDto.dni());
+        cliente.setTelefono(ClienteDto.telefono());
+        usuarioService.registrarCliente(ClienteDto);
+        Optional<Usuario>usuario=usuarioRepo.findByEmailIgnoreCase(ClienteDto.email());
         if (usuario.isPresent()){
             cliente.setUsuario(usuario.get());
         }
@@ -98,14 +90,14 @@ public class ClienteServiceImpl implements ICliente {
     }
 
     @Override
-    public ClienteDTO update(Long id, ClienteDTO clienteDTO) {
-        if (clienteRepo.existsById(id)){
-            Cliente cliente=clienteRepo.findById(id).get();
-            cliente.setTelefono(clienteDTO.getTelefono());
-            cliente.setNombre(clienteDTO.getNombre());
-            cliente.setDni(clienteDTO.getDni());
-           clienteRepo.save(cliente);
-           return mapper.clienteAClinenteDto(cliente);
+    public ClienteSimplificadoDto actualizar(Long id, ClienteDto ClienteDto) {
+        Optional<Cliente>cliente=clienteRepo.findById(id);
+        if(cliente.isPresent()){
+            cliente.get().setTelefono(ClienteDto.telefono());
+            cliente.get().setNombre(ClienteDto.nombre());
+            cliente.get().setDni(ClienteDto.dni());
+           clienteRepo.save(cliente.get());
+           return mapper.clienteAClienteDto(cliente.get());
         }else {
             throw  new UsuarioNoEncontradoException();
         }
@@ -113,7 +105,7 @@ public class ClienteServiceImpl implements ICliente {
     }
 
     @Override
-    public void delete(Long id) {
+    public void eliminar(Long id) {
       if (clienteRepo.existsById(id)){
           clienteRepo.deleteById(id);
       }else {
@@ -121,3 +113,4 @@ public class ClienteServiceImpl implements ICliente {
       }
     }
 }
+

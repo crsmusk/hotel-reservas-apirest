@@ -1,47 +1,39 @@
 package com.hotel.reservahabitaciones.Service.Impl;
 
-import com.hotel.reservahabitaciones.Exception.Exceptions.PermisoNoEnctradoException;
+import com.hotel.reservahabitaciones.Exception.Exceptions.PermisoNoEncontradoException;
 import com.hotel.reservahabitaciones.Exception.Exceptions.RolNoEncontradoException;
 import com.hotel.reservahabitaciones.Mapper.RolMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.RolDto;
 import com.hotel.reservahabitaciones.Model.Entities.Permiso;
 import com.hotel.reservahabitaciones.Model.Entities.Rol;
 import com.hotel.reservahabitaciones.Repository.RolRepository;
 import com.hotel.reservahabitaciones.Repository.PermisoRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IRol;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RolServiceImpl implements IRol {
 
 
     private RolRepository rolRepo;
-    @Autowired
-    public void setRolRepo(RolRepository rolRepo){
-        this.rolRepo=rolRepo;
-    }
-
     private RolMapper mapper;
-    @Autowired
-    public void setRolMapper(RolMapper mapper){
-        this.mapper=mapper;
-    }
-
     private PermisoRepository permisoRepo;
-    @Autowired
-    public void setPermisoRepo(PermisoRepository permisoRepo){
-        this.permisoRepo=permisoRepo;
+
+    public RolServiceImpl(RolRepository rolRepo, RolMapper mapper, PermisoRepository permisoRepo) {
+        this.rolRepo = rolRepo;
+        this.mapper = mapper;
+        this.permisoRepo = permisoRepo;
     }
 
     @Override
-    public List<RolDTO> getAll() {
+    public List<RolDto> obtenerTodos() {
         List<Rol>roles=rolRepo.findAll();
         if(roles.isEmpty()){
-            throw new RolNoEncontradoException();
+            return List.of();
         }else{
             return mapper.rolesARolesDto(roles);
         }
@@ -49,53 +41,47 @@ public class RolServiceImpl implements IRol {
     }
 
     @Override
-    public RolDTO getById(Long id) {
-        if (rolRepo.existsById(id)){
-            return mapper.rolARolDto(rolRepo.findById(id).get());
-        }else{
-            throw new RolNoEncontradoException();
-        }
+    public RolDto obtenerPorId(Long id) {
+        return rolRepo.findById(id)
+                .map(mapper::rolARolDto)
+                .orElseThrow(RolNoEncontradoException::new);
     }
 
     @Override
-    public RolDTO getByName(String nombre) {
-        if (rolRepo.findByNombreRolIgnoreCase(nombre).isPresent()){
-            return mapper.rolARolDto(rolRepo.findByNombreRolIgnoreCase(nombre).get());
-        }else{
-            throw new RolNoEncontradoException();
-        }
+    public RolDto obtenerPorNombre(String nombre) {
+        return rolRepo.findByNombreRolIgnoreCase(nombre)
+                .map(mapper::rolARolDto)
+                .orElseThrow(RolNoEncontradoException::new);
     }
 
     @Override
-    public RolDTO updateName(Long id, RolDTO rolDTO) {
-        if (rolRepo.existsById(id)){
-            Rol rol=rolRepo.findById(id).get();
-            rol.setNombreRol(rolDTO.getNombre());
-            rolRepo.save(rol);
-            return mapper.rolARolDto(rol);
+    public RolDto actualizarNombre(Long id, RolDto RolDto) {
+        Optional<Rol>rol=rolRepo.findById(id);
+        if (rol.isPresent()){
+            rol.get().setNombreRol(RolDto.getNombre().toUpperCase());
+            rolRepo.save(rol.get());
+            return mapper.rolARolDto(rol.get());
         }else {
             throw new RolNoEncontradoException();
         }
     }
 
     @Override
-    public void save(RolDTO rolDTO) {
+    public void guardar(RolDto RolDto) {
       Rol rol=new Rol();
       List<Permiso>lista=new ArrayList<>();
-      for (String nombre:rolDTO.getPermisos()){
-          if (permisoRepo.findByNombrePermisoIgnoreCase(nombre).isPresent()){
-              lista.add(permisoRepo.findByNombrePermisoIgnoreCase(nombre).get());
-          }else{
-              throw new PermisoNoEnctradoException("no se encontro el permiso con el nombre "+nombre);
-          }
+      for (String nombre:RolDto.getPermisos()){
+          Permiso permiso = permisoRepo.findByNombrePermisoIgnoreCase(nombre)
+                  .orElseThrow(() -> new PermisoNoEncontradoException("no se encontro el permiso con el nombre "+nombre));
+          lista.add(permiso);
       }
-      rol.setNombreRol(rolDTO.getNombre().toUpperCase());
+      rol.setNombreRol(RolDto.getNombre().toUpperCase());
       rol.setPermisos(lista);
       rolRepo.save(rol);
     }
 
     @Override
-    public void delete(Long id) {
+    public void eliminar(Long id) {
        if (rolRepo.existsById(id)){
            rolRepo.deleteById(id);
        }else{
@@ -104,22 +90,17 @@ public class RolServiceImpl implements IRol {
     }
 
     @Override
-    public RolDTO updatePermissions(Long id, List<String> permisos) {
-        if (permisoRepo.existsById(id)){
-            Rol rol=rolRepo.findById(id).get();
-            List<Permiso>lista=new ArrayList<>();
-            for (String p:permisos){
-                if (permisoRepo.findByNombrePermisoIgnoreCase(p).isPresent()){
-                    lista.add(permisoRepo.findByNombrePermisoIgnoreCase(p).get());
-                }else{
-                    throw new PermisoNoEnctradoException("no se encontro el permiso con el nombre "+p);
-                }
-            }
-            rol.setPermisos(lista);
-            rolRepo.save(rol);
-            return mapper.rolARolDto(rol);
-        }else{
-            throw new RolNoEncontradoException();
+    public RolDto actualizarPermisos(Long id, List<String> permisos) {
+        Rol rol = rolRepo.findById(id).orElseThrow(RolNoEncontradoException::new);
+        List<Permiso>lista=new ArrayList<>();
+        for (String p:permisos){
+            Permiso permiso = permisoRepo.findByNombrePermisoIgnoreCase(p)
+                    .orElseThrow(() -> new PermisoNoEncontradoException("no se encontro el permiso con el nombre "+p));
+            lista.add(permiso);
         }
+        rol.setPermisos(lista);
+        rolRepo.save(rol);
+        return mapper.rolARolDto(rol);
     }
 }
+

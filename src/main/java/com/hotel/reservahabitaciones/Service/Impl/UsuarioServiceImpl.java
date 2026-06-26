@@ -3,54 +3,45 @@ package com.hotel.reservahabitaciones.Service.Impl;
 import com.hotel.reservahabitaciones.Exception.Exceptions.RolNoEncontradoException;
 import com.hotel.reservahabitaciones.Exception.Exceptions.UsuarioNoEncontradoException;
 import com.hotel.reservahabitaciones.Mapper.UsuarioMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
-import com.hotel.reservahabitaciones.Model.DTOs.EmpleadoDTO;
-import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
-import com.hotel.reservahabitaciones.Model.DTOs.UsuarioDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.ClienteDto;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.EmpleadoDto;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.UsuarioDto;
 import com.hotel.reservahabitaciones.Model.Entities.Rol;
 import com.hotel.reservahabitaciones.Model.Entities.Usuario;
 import com.hotel.reservahabitaciones.Repository.RolRepository;
 import com.hotel.reservahabitaciones.Repository.UsuarioRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IUsuario;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements IUsuario {
 
 
     private UsuarioRepository usuarioRepo;
-    @Autowired
-    public void setUsuarioRepo(UsuarioRepository usuarioRepo){
-        this.usuarioRepo=usuarioRepo;
-    }
-
     private  RolRepository rolRepo;
-    @Autowired
-    public void setRolRepo(RolRepository rolRepo){
-        this.rolRepo=rolRepo;
-    }
-
     private UsuarioMapper mapper;
-    @Autowired
-    public void setMapper(UsuarioMapper mapper){
-        this.mapper=mapper;
+
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepo, RolRepository rolRepo, UsuarioMapper mapper) {
+        this.usuarioRepo = usuarioRepo;
+        this.rolRepo = rolRepo;
+        this.mapper = mapper;
     }
 
     @Override
-    public List<UsuarioDTO> getAll() {
+    public List<UsuarioDto> obtenerTodos() {
         if (usuarioRepo.findAll().isEmpty()){
-            throw new UsuarioNoEncontradoException();
+           return List.of();
         }else {
             return mapper.usuariosAUsuariosDto(usuarioRepo.findAll());
         }
     }
 
     @Override
-    public UsuarioDTO getById(Long id) {
+    public UsuarioDto obtenerPorId(Long id) {
         if (usuarioRepo.existsById(id)){
             return mapper.usuarioAUsuarioDto(usuarioRepo.findById(id).get());
         }else {
@@ -59,7 +50,7 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public UsuarioDTO getByEmail(String email) {
+    public UsuarioDto obtenerPorEmail(String email) {
         if (usuarioRepo.findByEmailIgnoreCase(email).isPresent()){
          return mapper.usuarioAUsuarioDto(usuarioRepo.findByEmailIgnoreCase(email).get());
         }else {
@@ -68,37 +59,33 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public void save(UsuarioDTO usuarioDTO) {
+    public void guardar(UsuarioDto UsuarioDto) {
         Usuario usuario=new Usuario();
         List<Rol>lista=new ArrayList<>();
-        for (String rol:usuarioDTO.getRoles()){
-            if (rolRepo.findByNombreRolIgnoreCase(rol).isPresent()){
-                lista.add(rolRepo.findByNombreRolIgnoreCase(rol).get());
-            }else {
-                throw new RolNoEncontradoException();
-            }
+        for (String rol:UsuarioDto.getRoles()){
+          lista.add(buscarRol(rol));
         }
         usuario.setRoles(lista);
-        usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setPassword(usuarioDTO.getPassword());
+        usuario.setEmail(UsuarioDto.getEmail());
+        usuario.setPassword(UsuarioDto.getPassword());
         usuarioRepo.save(usuario);
     }
 
     @Override
-    public UsuarioDTO update(Long id, UsuarioDTO usuarioDTO) {
-        if (usuarioRepo.existsById(id)){
-            Usuario usuario=usuarioRepo.findById(id).get();
-            usuario.setEmail(usuarioDTO.getEmail());
-            usuario.setPassword(usuarioDTO.getPassword());
-            usuarioRepo.save(usuario);
-            return mapper.usuarioAUsuarioDto(usuario);
+    public UsuarioDto actualizar(Long id, UsuarioDto UsuarioDto) {
+        Optional<Usuario>usuario=usuarioRepo.findById(id);
+        if (usuario.isPresent()){
+            usuario.get().setEmail(UsuarioDto.getEmail());
+            usuario.get().setPassword(UsuarioDto.getPassword());
+            usuarioRepo.save(usuario.get());
+            return mapper.usuarioAUsuarioDto(usuario.get());
         }else {
             throw new UsuarioNoEncontradoException();
         }
     }
 
     @Override
-    public void delete(Long id) {
+    public void eliminar(Long id) {
         if (usuarioRepo.existsById(id)){
           usuarioRepo.deleteById(id);
         }else {
@@ -107,57 +94,57 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public void registerCustommer(ClienteDTO clienteDTO) {
+    public void registrarCliente(ClienteDto ClienteDto) {
         Usuario usuario=new Usuario();
-        usuario.setPassword(clienteDTO.getPassword());
-        usuario.setEmail(clienteDTO.getEmail());
-        if (rolRepo.findByNombreRolIgnoreCase("CUSTOMER").isPresent()){
-            usuario.setRoles(List.of(rolRepo.findByNombreRolIgnoreCase("CUSTOMER").get()));
-        }else {
-            throw new RolNoEncontradoException();
-        }
+        usuario.setPassword(ClienteDto.password());
+        usuario.setEmail(ClienteDto.email());
+        usuario.setRoles(List.of(buscarRol("CUSTOMER")));
         usuarioRepo.save(usuario);
     }
 
     @Override
-    public void registerEmployee(EmpleadoDTO empleadoDTO) {
+    public void registrarEmpleado(EmpleadoDto EmpleadoDto) {
         Usuario usuario=new Usuario();
-        usuario.setPassword(empleadoDTO.getPassword());
-        usuario.setEmail(empleadoDTO.getEmail());
-        if (rolRepo.findByNombreRolIgnoreCase("TRAINEE").isPresent()){
-            usuario.setRoles(List.of(rolRepo.findByNombreRolIgnoreCase("TRAINEE").get()));
-        }else {
-            throw new RolNoEncontradoException();
-        }
+        usuario.setPassword(EmpleadoDto.getPassword());
+        usuario.setEmail(EmpleadoDto.getEmail());
+        usuario.setRoles(List.of(buscarRol("TRAINEE")));
         usuarioRepo.save(usuario);
     }
 
     @Override
-    public void updatePassword(String email, String contrasenaNueva) {
-        if (usuarioRepo.findByEmailIgnoreCase(email).isPresent()){
-            Usuario usuario=usuarioRepo.findByEmailIgnoreCase(email).get();
-            usuario.setPassword(contrasenaNueva);
+    public void actualizarContrasena(String email, String contrasenaNueva) {
+        Optional<Usuario>usuario=usuarioRepo.findByEmailIgnoreCase(email);
+        if (usuario.isPresent()){
+            usuario.get().setPassword(contrasenaNueva);
+            usuarioRepo.save(usuario.get());
         }else{
             throw new UsuarioNoEncontradoException();
         }
     }
 
     @Override
-    public void UpdateRoles(Long id, List<String> roles) {
+    public void actualizarRoles(Long id, List<String> roles) {
         List<Rol>lista=new ArrayList<>();
-        if (usuarioRepo.existsById(id)){
-            Usuario usuario=usuarioRepo.findById(id).get();
+        Optional<Usuario> usuario=usuarioRepo.findById(id);
+        if (usuario.isPresent()){
             for (String rol:roles){
-                if (rolRepo.findByNombreRolIgnoreCase(rol).isPresent()){
-                    lista.add(rolRepo.findByNombreRolIgnoreCase(rol).get());
-                }else {
-                    throw new RolNoEncontradoException();
-                }
+               lista.add(buscarRol(rol));
             }
-            usuarioRepo.save(usuario);
+            usuario.get().setRoles(lista);
+            usuarioRepo.save(usuario.get());
+        }else{
+            throw new UsuarioNoEncontradoException();
         }
 
     }
 
+    private Rol buscarRol(String rol) {
+        if (rolRepo.findByNombreRolIgnoreCase(rol).isEmpty()){
+            throw new RolNoEncontradoException();
+        }
+        return rolRepo.findByNombreRolIgnoreCase(rol).get();
+    }
+
 
 }
+

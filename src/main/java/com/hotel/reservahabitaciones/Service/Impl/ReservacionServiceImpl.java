@@ -2,14 +2,15 @@ package com.hotel.reservahabitaciones.Service.Impl;
 
 import com.hotel.reservahabitaciones.Exception.Exceptions.*;
 import com.hotel.reservahabitaciones.Mapper.ReservacionMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.ReservacionDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.ReservacionDto;
+import com.hotel.reservahabitaciones.Model.DTOs.salida.ReservacionSimplificadoDto;
+import com.hotel.reservahabitaciones.Model.Entities.Cliente;
 import com.hotel.reservahabitaciones.Model.Entities.Habitacion;
 import com.hotel.reservahabitaciones.Model.Entities.Reservacion;
 import com.hotel.reservahabitaciones.Repository.ClienteRepository;
 import com.hotel.reservahabitaciones.Repository.HabitacionRepository;
 import com.hotel.reservahabitaciones.Repository.ReservaRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IReservacion;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,45 +22,36 @@ import java.util.Optional;
 public class ReservacionServiceImpl implements IReservacion {
 
     private ReservaRepository reservaRepo;
-    @Autowired
-    public void setReservaRepo(ReservaRepository reservaRepo){
-        this.reservaRepo=reservaRepo;
-    }
-
     private ReservacionMapper mapper;
-    @Autowired
-    public void setReservacionMapper(ReservacionMapper mapper){
-        this.mapper=mapper;
-    }
-
     private HabitacionRepository habitacionRepo;
-    @Autowired
-    public void setHabitacionRepo(HabitacionRepository habitacionRepo){
-        this.habitacionRepo=habitacionRepo;
-    }
-
     private ClienteRepository clienteRepo;
-    @Autowired
-    public void setClienteRepo(ClienteRepository clienteRepo){
-        this.clienteRepo=clienteRepo;
+
+    public ReservacionServiceImpl(ReservaRepository reservaRepo, ReservacionMapper mapper, HabitacionRepository habitacionRepo, ClienteRepository clienteRepo) {
+        this.reservaRepo = reservaRepo;
+        this.mapper = mapper;
+        this.habitacionRepo = habitacionRepo;
+        this.clienteRepo = clienteRepo;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getAll() {
-        if (reservaRepo.findAll().isEmpty()){
-            throw new ReservacionNoEncontradaException();
+    public List<ReservacionSimplificadoDto> obtenerTodos() {
+        List<Reservacion>reservaciones=reservaRepo.findAll();
+        if (reservaciones.isEmpty()) {
+            return List.of();
         }else{
-            return mapper.reservacionesAReservacionesDto(reservaRepo.findAll());
+
+            return mapper.reservacionesAReservacionesDto(reservaciones);
         }
 
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReservacionDTO getById(Long id) {
-       if (reservaRepo.findById(id).isPresent()){
-           return mapper.reservacionAreservacionDto(reservaRepo.findById(id).get());
+    public ReservacionSimplificadoDto obtenerPorId(Long id) {
+        Optional<Reservacion>reservacion=reservaRepo.findById(id);
+       if (reservacion.isPresent()){
+           return mapper.reservacionAReservacionDto(reservacion.get());
        }else{
            throw new ReservacionNoEncontradaException();
        }
@@ -67,8 +59,8 @@ public class ReservacionServiceImpl implements IReservacion {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void delete(Long id) {
+    @Transactional
+    public void eliminar(Long id) {
      if (reservaRepo.existsById(id)){
          reservaRepo.deleteById(id);
      }else {
@@ -78,145 +70,169 @@ public class ReservacionServiceImpl implements IReservacion {
 
     @Override
     @Transactional
-    public void save(ReservacionDTO reservacionDTO) {
-        Reservacion reservacion=new Reservacion();
-        reservacion.setFechaEntrada(reservacionDTO.getFechaEntrada());
-        reservacion.setFechaSalida(reservacionDTO.getFechaSalida());
+    public void guardar(ReservacionDto ReservacionDto) {
+        Reservacion reservacion = new Reservacion();
+        reservacion.setFechaEntrada(ReservacionDto.fechaEntrada());
+        reservacion.setFechaSalida(ReservacionDto.fechaSalida());
 
-        List<Habitacion>lista=new ArrayList<>();
-
-        if (clienteRepo.existsById(reservacionDTO.getIdCliente())){
-            reservacion.setCliente(clienteRepo.findById(reservacionDTO.getIdCliente()).get());
-        }else{
+        Optional<Cliente> cliente = clienteRepo.findById(ReservacionDto.idCliente());
+        if (cliente.isPresent()){
+            reservacion.setCliente(cliente.get());
+        } else {
             throw new UsuarioNoEncontradoException();
         }
 
-        for(Long id:reservacionDTO.getIds()){
-            Optional<Habitacion>room=habitacionRepo.findById(id);
-            if (room.isPresent()){
-                if (available(room.get(),reservacionDTO.getFechaEntrada())){
-                    lista.add(room.get());
-                }
-            }else{
-                throw new HabitacionNoEncontradaException();
+        List<Habitacion> lista = new ArrayList<>();
+        List<Habitacion> habitaciones = habitacionRepo.findByIdInWithLock(ReservacionDto.habitacionIds());
+
+        for (Habitacion habitacion : habitaciones) {
+            if (estaDisponible(habitacion, ReservacionDto.fechaEntrada())) {
+                habitacion.setEstado(false);
+                habitacionRepo.save(habitacion);
+                lista.add(habitacion);
+            } else {
+                throw new ReservaNoDisponibleException(habitacion.getId());
             }
         }
-        reservacion.setHabitacions(lista);
+
+        reservacion.setHabitacionesActivas(lista);
         reservaRepo.save(reservacion);
-
     }
 
+
     @Override
-    public ReservacionDTO updateOutPut(Long id, LocalDate salida) {
-       if (reservaRepo.existsById(id)){
-           Reservacion reservacion=reservaRepo.findById(id).get();
-           reservacion.setFechaSalida(salida);
-           reservaRepo.save(reservacion);
-           return mapper.reservacionAreservacionDto(reservacion);
-       }else{
-           throw new ReservacionNoEncontradaException();
-       }
+    @Transactional
+    public ReservacionSimplificadoDto actualizarFechaSalida(Long id, Long idHabitacion, LocalDate salida) {
+        Optional<Reservacion> reservacion = reservaRepo.findById(id);
+        if (reservacion.isPresent()) {
+            Optional<Reservacion> reservacionProxima = reservaRepo.findFirstByHabitacionesActivasIdAndFechaEntradaGreaterThanOrderByFechaEntradaAsc(idHabitacion, reservacion.get().getFechaSalida());
+            if (reservacionProxima.isPresent() && salida.isAfter(reservacionProxima.get().getFechaEntrada())) {
+                throw new HabitacionNoDisponibleException("la habitacion ya tiene una reserva para esa hora");
+            }
+            reservacion.get().setFechaSalida(salida);
+            reservaRepo.save(reservacion.get());
+            return mapper.reservacionAReservacionDto(reservacion.get());
+        } else {
+            throw new ReservacionNoEncontradaException();
+        }
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getByOutPutAfterThan(LocalDate fecha) {
-        if (reservaRepo.findByFechaSalidaGreaterThanEqual(fecha).isEmpty()){
+    public List<ReservacionSimplificadoDto> obtenerPorSalidaDespuesDe(LocalDate fecha) {
+        List<Reservacion>reservaciones=reservaRepo.findByFechaSalidaGreaterThanEqual(fecha);
+        if (reservaciones.isEmpty()){
             throw new ReservacionNoEncontradaException();
         }else {
-            return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaSalidaGreaterThanEqual(fecha));
+            return mapper.reservacionesAReservacionesDto(reservaciones);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getByOutPutBeforeThan(LocalDate fecha) {
-        if (reservaRepo.findByFechaSalidaLessThanEqual(fecha).isEmpty()){
+    public List<ReservacionSimplificadoDto> obtenerPorSalidaAntesDe(LocalDate fecha) {
+        List<Reservacion>reservaciones=reservaRepo.findByFechaSalidaLessThanEqual(fecha);
+        if (reservaciones.isEmpty()){
             throw new ReservacionNoEncontradaException();
         }else {
-            return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaSalidaLessThanEqual(fecha));
+            return mapper.reservacionesAReservacionesDto(reservaciones);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getByInPutAfterThan(LocalDate fecha) {
-        if (reservaRepo.findByFechaEntradaGreaterThanEqual(fecha).isEmpty()){
+    public List<ReservacionSimplificadoDto> obtenerPorEntradaDespuesDe(LocalDate fecha) {
+        List<Reservacion>reservaciones=reservaRepo.findByFechaEntradaGreaterThanEqual(fecha);
+        if (reservaciones.isEmpty()){
             throw new ReservacionNoEncontradaException();
         }else{
-            return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaEntradaGreaterThanEqual(fecha));
+            return mapper.reservacionesAReservacionesDto(reservaciones);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservacionDTO> getByInputBeforeThan(LocalDate fecha) {
-        if (reservaRepo.findByFechaEntradaLessThanEqual(fecha).isEmpty()){
+    public List<ReservacionSimplificadoDto> obtenerPorEntradaAntesDe(LocalDate fecha) {
+        List<Reservacion>reservaciones=reservaRepo.findByFechaEntradaLessThanEqual(fecha);
+        if (reservaciones.isEmpty()){
             throw new ReservacionNoEncontradaException();
         }else{
-            return mapper.reservacionesAReservacionesDto(reservaRepo.findByFechaEntradaLessThanEqual(fecha));
+            return mapper.reservacionesAReservacionesDto(reservaciones);
         }
     }
 
     @Override
     @Transactional
-    public ReservacionDTO changeRoom(Long idReserva, Long idHabitacionActual, Long idNuevaHabitacion, LocalDate salida) {
-        List<Habitacion>listaHabitaciones=new ArrayList<>();
+    public ReservacionSimplificadoDto cambiarHabitacion(Long idReserva, Long idHabitacionActual, Long idNuevaHabitacion, LocalDate salida) {
 
-        if (reservaRepo.existsById(idReserva)){
-            Reservacion reservacion=reservaRepo.findById(idReserva).get();
-            cambiarEstados(idHabitacionActual);
-            //por si reservo mas de una habitacion
-            for (Habitacion h:reservacion.getHabitacions()){
-                Long idHabitacion=h.getId();
-                if (idHabitacion.equals(idHabitacionActual)){
-                    continue;
-                }
-                listaHabitaciones.add(h);
+        Optional<Reservacion> reservacion = reservaRepo.findById(idReserva);
+        if (!reservacion.isPresent()) {
+            throw new ReservacionNoEncontradaException();
+        }
+        Habitacion habitacionActual = null;
+        for (Habitacion i : reservacion.get().getHabitacionesActivas()) {
+            if (i.getId().equals(idHabitacionActual)) {
+                habitacionActual = i;
+                break;
             }
-            Optional<Habitacion>room=habitacionRepo.findById(idNuevaHabitacion);
-            if (room.isPresent()){
-                if (available(room.get(),LocalDate.now())){
-                    listaHabitaciones.add(habitacionRepo.findById(idNuevaHabitacion).get());
-                    reservacion.setHabitacions(listaHabitaciones);
-                    reservaRepo.save(reservacion);
-                    return mapper.reservacionAreservacionDto(reservacion);
-                }else{
-                    throw new ReservaNoDisponibleException();
-                }
+        }
+        if (habitacionActual == null) {
+            throw new HabitacionNoEncontradaException();
+        }
+        reservacion.get().getHabitacionesAnteriores().add(habitacionActual);
+        reservacion.get().getHabitacionesActivas().remove(habitacionActual);
+        habitacionActual.setEstado(true);
+        habitacionRepo.save(habitacionActual);
+        reservaRepo.save(reservacion.get());
 
-            }else{
-                throw new HabitacionNoEncontradaException();
-            }
-        }else {
+        Optional<Habitacion> nuevaHabitacion = habitacionRepo.findByIdWithLock(idNuevaHabitacion);
+        if (!nuevaHabitacion.isPresent()) {
+            throw new HabitacionNoEncontradaException();
+        }
+        if (estaDisponible(nuevaHabitacion.get(), reservacion.get().getFechaEntrada())) {
+            nuevaHabitacion.get().setEstado(false);
+            habitacionRepo.save(nuevaHabitacion.get());
+            reservacion.get().getHabitacionesActivas().add(nuevaHabitacion.get());
+            reservacion.get().setFechaSalida(salida);
+            reservaRepo.save(reservacion.get());
+            return mapper.reservacionAReservacionDto(reservacion.get());
+        } else {
+            throw new HabitacionNoDisponibleException("la habitacion a cambiar no esta disponible");
+        }
+    }
+
+
+    public Boolean estaDisponible(Habitacion room, LocalDate fechaEntrada){
+        if (room.isEstado()){
+            return true;
+        }
+        Optional<Reservacion> reservaActual = reservaRepo.findOverlappingReservation(room.getId(), fechaEntrada);
+        return reservaActual.isEmpty();
+    }
+    //@Transactional
+    public void cambiarEstados(Long id) {
+        Optional<Habitacion> room = habitacionRepo.findById(id);
+        if (room.isPresent()) {
+            Habitacion habitacion = room.get();
+            habitacion.setEstado(true);
+            habitacionRepo.save(habitacion);
+        } else {
+            throw new HabitacionNoEncontradaException();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReservacionSimplificadoDto obtenerProximaReservacionPorHabitacion(Long idHabitacion, LocalDate fecha) {
+        Optional<Reservacion> reservacion = reservaRepo.findFirstByHabitacionesActivasIdAndFechaEntradaGreaterThanOrderByFechaEntradaAsc(idHabitacion, fecha);
+        if (reservacion.isPresent()) {
+            return mapper.reservacionAReservacionDto(reservacion.get());
+        } else {
             throw new ReservacionNoEncontradaException();
         }
     }
 
-
-    public Boolean available(Habitacion room, LocalDate fechaEntrada){
-        if (room.isEstado()){
-            room.setEstado(false);
-            habitacionRepo.save(room);
-            return true;
-
-        }else  if (fechaEntrada.isAfter(room.getReservacion().getFechaSalida())) {
-            return true;
-        }
-        return false;
-
-    }
-    //@Transactional
-    public void cambiarEstados(Long id) {
-        Optional<Habitacion>room=habitacionRepo.findById(id);
-        if (room.isPresent()){
-            Habitacion habitacion=room.get();
-            habitacion.setEstado(true);
-            habitacionRepo.save(habitacion);
-        }else {
-            throw  new HabitacionNoEncontradaException();
-        }
-    }
-
 }
+
+

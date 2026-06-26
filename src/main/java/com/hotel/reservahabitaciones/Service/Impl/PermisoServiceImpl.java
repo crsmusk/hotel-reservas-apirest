@@ -1,88 +1,80 @@
 package com.hotel.reservahabitaciones.Service.Impl;
 
-import com.hotel.reservahabitaciones.Exception.Exceptions.PermisoNoEnctradoException;
+import com.hotel.reservahabitaciones.Exception.Exceptions.PermisoNoEncontradoException;
 import com.hotel.reservahabitaciones.Mapper.PermisoMapper;
-import com.hotel.reservahabitaciones.Model.DTOs.PermisoDTO;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.PermisoDto;
 import com.hotel.reservahabitaciones.Model.Entities.Permiso;
 import com.hotel.reservahabitaciones.Repository.PermisoRepository;
 import com.hotel.reservahabitaciones.Service.Interface.IPermiso;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PermisoServiceImpl implements IPermiso {
 
 
-    private PermisoRepository permisoRepo;
-    @Autowired
-    public void setPermisoRepo(PermisoRepository permisoRepo){
-       this.permisoRepo=permisoRepo;
-    }
+    private final PermisoRepository permisoRepo;
+    private final PermisoMapper mapper;
 
-    private PermisoMapper mapper;
-    @Autowired
-    public void setMapper(PermisoMapper mapper){
-        this.mapper=mapper;
+    public PermisoServiceImpl(PermisoRepository permisoRepo, PermisoMapper mapper) {
+        this.permisoRepo = permisoRepo;
+        this.mapper = mapper;
     }
 
     @Override
-    public List<PermisoDTO> getAll() {
-        if (permisoRepo.findAll().isEmpty()){
+    public List<PermisoDto> obtenerTodos() {
+        List<Permiso> permisos = permisoRepo.findAll();
+        if (permisos.isEmpty()) {
+            return List.of();
+        } else {
+            return mapper.permisosAPermisosDto(permisos);
+        }
+    }
 
-          throw  new PermisoNoEnctradoException("no se econtraron permisos registrados");
+    @Override
+    public PermisoDto obtenerPorId(Long id) {
+        return permisoRepo.findById(id)
+                .map(mapper::permisoAPermisoDto)
+                .orElseThrow(() -> new PermisoNoEncontradoException("No se encontró el permiso con el id "+id));
+    }
+
+    @Override
+    public PermisoDto obtenerPorNombre(String nombre) {
+        return permisoRepo.findByNombrePermisoIgnoreCase(nombre)
+                .map(mapper::permisoAPermisoDto)
+                .orElseThrow(() -> new PermisoNoEncontradoException("No se encontró el permiso con el nombre "+nombre));
+    }
+
+    @Override
+    public PermisoDto actualizar(Long id, PermisoDto permisoDto) {
+        Optional<Permiso> permiso=permisoRepo.findById(id);
+        if (permiso.isPresent()){
+            permiso.get().setNombrePermiso(permisoDto.getNombre());
+            permisoRepo.save(permiso.get());
+            return mapper.permisoAPermisoDto(permiso.get());
         }else{
-            return mapper.permisosAPermisosDto(permisoRepo.findAll());
+            throw new PermisoNoEncontradoException("No se encontró el permiso con el id "+id);
         }
 
     }
 
     @Override
-    public PermisoDTO getById(Long id) {
-        if(permisoRepo.existsById(id)){
-            return mapper.permisoAPermisoDto(permisoRepo.findById(id).get());
-        }else{
-            throw new PermisoNoEnctradoException("no se encotro el permiso con  el id "+id);
-        }
-    }
-
-    @Override
-    public PermisoDTO getByName(String nombre) {
-        if (permisoRepo.findByNombrePermisoIgnoreCase(nombre).isPresent()){
-            return mapper.permisoAPermisoDto(permisoRepo.findByNombrePermisoIgnoreCase(nombre).get());
-        }else{
-            throw new PermisoNoEnctradoException("no se encontro el permiso con el nombre "+nombre);
-        }
-
-    }
-
-    @Override
-    public PermisoDTO update(Long id, PermisoDTO permisoDTO) {
-        if (permisoRepo.existsById(id)){
-            Permiso permiso=permisoRepo.findById(id).get();
-            permiso.setNombrePermiso(permisoDTO.getNombre());
-            permisoRepo.save(permiso);
-            return mapper.permisoAPermisoDto(permiso);
-        }else{
-            throw new PermisoNoEnctradoException("no se encontro el permiso con el id");
-        }
-
-    }
-
-    @Override
-    public void save(PermisoDTO permisoDTO) {
+    public PermisoDto guardar(PermisoDto permisoDto) {
         Permiso permiso=new Permiso();
-        permiso.setNombrePermiso(permisoDTO.getNombre());
-        permisoRepo.save(permiso);
+        permiso.setNombrePermiso(permisoDto.getNombre());
+        permiso = permisoRepo.save(permiso);
+        return mapper.permisoAPermisoDto(permiso);
     }
 
     @Override
-    public void delete(Long id) {
+    public void eliminar(Long id) {
         if (permisoRepo.existsById(id)){
             permisoRepo.deleteById(id);
         }else{
-            throw new PermisoNoEnctradoException("no se encontro el permiso con el id");
+            throw new PermisoNoEncontradoException("No se encontró el permiso con el id "+id);
         }
     }
 }
+
