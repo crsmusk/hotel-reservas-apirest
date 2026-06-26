@@ -1,7 +1,7 @@
 package com.hotel.reservahabitaciones.Controller;
 
-import com.hotel.reservahabitaciones.Model.DTOs.UsuarioDTO;
-import com.hotel.reservahabitaciones.Service.Impl.UsuarioServiceImpl;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.UsuarioDto;
+import com.hotel.reservahabitaciones.Service.Interface.IUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,36 +14,49 @@ import java.util.List;
 public class UsuarioController {
 
 
-    private UsuarioServiceImpl usuarioService;
-    @Autowired
-    public void setUsuarioService(UsuarioServiceImpl usuarioService){
+    private final IUsuario usuarioService;
+    
+    public UsuarioController(IUsuario usuarioService){
         this.usuarioService=usuarioService;
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>>getAll(){
-        return new ResponseEntity<>(usuarioService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<UsuarioDto>>obtenerTodos(){
+        return new ResponseEntity<>(usuarioService.obtenerTodos(), HttpStatus.OK);
     }
     @GetMapping("/buscar-usuario-por-id/{id}")
-    public ResponseEntity<UsuarioDTO>getById(@PathVariable Long id){
-        return new ResponseEntity<>(usuarioService.getById(id),HttpStatus.OK);
+    public ResponseEntity<UsuarioDto>obtenerPorId(@PathVariable Long id){
+        return new ResponseEntity<>(usuarioService.obtenerPorId(id),HttpStatus.OK);
     }
     @GetMapping("/buscar-usuario-por-email/{email}")
-    public ResponseEntity<UsuarioDTO>getByEmail(@PathVariable String email){
-        return new ResponseEntity<>(usuarioService.getByEmail(email),HttpStatus.OK);
+    public ResponseEntity<UsuarioDto>obtenerPorEmail(@PathVariable String email){
+        return new ResponseEntity<>(usuarioService.obtenerPorEmail(email),HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<Void> saveUser(@RequestBody UsuarioDTO usuarioDTO){
-        usuarioService.save(usuarioDTO);
+    public ResponseEntity<Void> guardarUsuario(@RequestBody UsuarioDto UsuarioDto){
+        usuarioService.guardar(UsuarioDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO>update(@PathVariable Long id,@RequestBody UsuarioDTO usuarioDTO){
-        return new ResponseEntity<>(usuarioService.update(id,usuarioDTO),HttpStatus.OK);
+    public ResponseEntity<UsuarioDto>actualizar(@PathVariable Long id,@RequestBody UsuarioDto UsuarioDto){
+        return new ResponseEntity<>(usuarioService.actualizar(id,UsuarioDto),HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>delete(@PathVariable Long id){
-        usuarioService.delete(id);
+    public ResponseEntity<Void>eliminar(@PathVariable Long id){
+        usuarioService.eliminar(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/actualizar-contrasena/{email}")
+    public ResponseEntity<Void> actualizarContrasena(@PathVariable String email, @RequestBody String contrasenaNueva){
+        usuarioService.actualizarContrasena(email, contrasenaNueva);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/actualizar-roles/{id}")
+    public ResponseEntity<Void> actualizarRoles(@PathVariable Long id, @RequestBody List<String> roles){
+        usuarioService.actualizarRoles(id, roles);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
+

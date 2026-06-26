@@ -19,6 +19,16 @@ public class GlobalExceptionHandler {
         return  new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(HabitacionYaExisteException.class)
+    public ResponseEntity<Error>manejarHabitacionYaExisteException(HabitacionYaExisteException ex){
+        Error error=new Error(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(HabitacionNoDisponibleException.class)
     public ResponseEntity<Error>manejarHabitacionNoDisponibleException(HabitacionNoDisponibleException ex){
         Error error=new Error(
@@ -49,7 +59,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(ReservacionNoEncontradaException.class)
-    public ResponseEntity<Error>manenarReservacionNoEncontradaException(ReservacionNoEncontradaException ex){
+    public ResponseEntity<Error>manejarReservacionNoEncontradaException(ReservacionNoEncontradaException ex){
         Error error=new Error(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
@@ -66,8 +76,8 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(PermisoNoEnctradoException.class)
-    public ResponseEntity<Error>manejarPermisoNoEnctradoException(PermisoNoEnctradoException ex){
+    @ExceptionHandler(PermisoNoEncontradoException.class)
+    public ResponseEntity<Error>manejarPermisoNoEncontradoException(PermisoNoEncontradoException ex){
         Error error=new Error(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
@@ -84,5 +94,15 @@ public class GlobalExceptionHandler {
                 System.currentTimeMillis()
         );
         return  new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<Error>manejarDataIntegrityViolationException(org.springframework.dao.DataIntegrityViolationException ex){
+        Error error=new Error(
+                HttpStatus.CONFLICT.value(),
+                "Ya existe un registro con ese valor único. Verifique los datos e intente de nuevo.",
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
     }
 }

@@ -1,11 +1,13 @@
 package com.hotel.reservahabitaciones.Controller;
 
-import com.hotel.reservahabitaciones.Model.DTOs.ClienteDTO;
-import com.hotel.reservahabitaciones.Service.Impl.ClienteServiceImpl;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.ClienteDto;
+import com.hotel.reservahabitaciones.Model.DTOs.salida.ClienteSimplificadoDto;
+import com.hotel.reservahabitaciones.Service.Interface.ICliente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 
 import java.util.List;
@@ -14,44 +16,48 @@ import java.util.List;
 @RequestMapping("/hotel/clientes")
 public class ClienteController {
 
-    @Autowired
-    ClienteServiceImpl clienteService;
+    private final ICliente clienteService;
+
+    public ClienteController(ICliente clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<ClienteDTO>>getAll(){
-        return new ResponseEntity<>(clienteService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<ClienteSimplificadoDto>>obtenerTodos(){
+        return new ResponseEntity<>(clienteService.obtenerTodos(), HttpStatus.OK);
     }
 
     @GetMapping("/buscar-cliente-por-id/{id}")
-    public ResponseEntity<ClienteDTO>getById(@PathVariable Long id){
-        return new ResponseEntity<>(clienteService.getById(id),HttpStatus.OK);
+    public ResponseEntity<ClienteSimplificadoDto>obtenerPorId(@PathVariable Long id){
+        return new ResponseEntity<>(clienteService.obtenerPorId(id),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-cliente-por-nombre/{nombre}")
-    public ResponseEntity<List<ClienteDTO>>getByName(@PathVariable String nombre){
-        return new ResponseEntity<>(clienteService.getByName(nombre),HttpStatus.OK);
+    public ResponseEntity<List<ClienteSimplificadoDto>>obtenerPorNombre(@PathVariable String nombre){
+        return new ResponseEntity<>(clienteService.obtenerPorNombre(nombre),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-cliente-por-apellido/{apellido}")
-    public ResponseEntity<List<ClienteDTO>>getByLastName(@PathVariable String apellido){
-        return new ResponseEntity<>(clienteService.getByLastName(apellido),HttpStatus.OK);
+    public ResponseEntity<List<ClienteSimplificadoDto>>obtenerPorApellido(@PathVariable String apellido){
+        return new ResponseEntity<>(clienteService.obtenerPorApellido(apellido),HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Void>save(@RequestBody ClienteDTO clienteDTO){
-        clienteService.save(clienteDTO);
+    public ResponseEntity<Void>guardar(@Valid @RequestBody ClienteDto clienteDto){
+        clienteService.guardar(clienteDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO>update(@PathVariable Long id,@RequestBody ClienteDTO clienteDTO){
-        return new ResponseEntity<>(clienteService.update(id,clienteDTO),HttpStatus.OK);
+    public ResponseEntity<ClienteSimplificadoDto>actualizar(@PathVariable Long id, @Valid @RequestBody ClienteDto clienteDto){
+        return new ResponseEntity<>(clienteService.actualizar(id,clienteDto),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>delete(@PathVariable Long id){
-        clienteService.delete(id);
+    public ResponseEntity<Void>eliminar(@PathVariable Long id){
+        clienteService.eliminar(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
+

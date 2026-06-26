@@ -1,7 +1,7 @@
 package com.hotel.reservahabitaciones.Controller;
 
-import com.hotel.reservahabitaciones.Model.DTOs.RolDTO;
-import com.hotel.reservahabitaciones.Service.Impl.RolServiceImpl;
+import com.hotel.reservahabitaciones.Model.DTOs.entrada.RolDto;
+import com.hotel.reservahabitaciones.Service.Interface.IRol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,45 +14,46 @@ import java.util.List;
 public class RolController {
 
 
-    private  RolServiceImpl rolService;
-    @Autowired
-    public void setRolService(RolServiceImpl rolService){
+    private final IRol rolService;
+    
+    public RolController(IRol rolService){
         this.rolService=rolService;
     }
 
     @GetMapping
-    public ResponseEntity<List<RolDTO>>getAll(){
-        return new ResponseEntity<>(rolService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<RolDto>>obtenerTodos(){
+        return new ResponseEntity<>(rolService.obtenerTodos(), HttpStatus.OK);
     }
     @GetMapping("/buscar-rol-por-id/{id}")
-    public ResponseEntity<RolDTO>getById(@PathVariable Long id){
-        return new ResponseEntity<>(rolService.getById(id),HttpStatus.OK);
+    public ResponseEntity<RolDto>obtenerPorId(@PathVariable Long id){
+        return new ResponseEntity<>(rolService.obtenerPorId(id),HttpStatus.OK);
     }
 
     @GetMapping("/buscar-rol-por-nombre/{nombre}")
-    public ResponseEntity<RolDTO>getByName(@PathVariable String nombre){
-        return new ResponseEntity<>(rolService.getByName(nombre),HttpStatus.OK);
+    public ResponseEntity<RolDto>obtenerPorNombre(@PathVariable String nombre){
+        return new ResponseEntity<>(rolService.obtenerPorNombre(nombre),HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Void>saveRol(@RequestBody RolDTO rolDTO){
-        rolService.save(rolDTO);
+    public ResponseEntity<Void>guardarRol(@RequestBody RolDto RolDto){
+        rolService.guardar(RolDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RolDTO>update(@RequestBody RolDTO rolDTO,@PathVariable Long id){
-        return new ResponseEntity<>(rolService.updateName(id,rolDTO),HttpStatus.OK);
+    public ResponseEntity<RolDto>actualizar(@RequestBody RolDto RolDto,@PathVariable Long id){
+        return new ResponseEntity<>(rolService.actualizarNombre(id,RolDto),HttpStatus.OK);
     }
 
     @PutMapping("/actualizar-permisos/{id}")
-    public ResponseEntity<RolDTO>updatePermissions(@PathVariable Long id,@RequestBody List<String>permisos){
-        return new ResponseEntity<>(rolService.updatePermissions(id,permisos),HttpStatus.OK);
+    public ResponseEntity<RolDto>actualizarPermisos(@PathVariable Long id,@RequestBody List<String>permisos){
+        return new ResponseEntity<>(rolService.actualizarPermisos(id,permisos),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>delete(@PathVariable Long id){
-        rolService.delete(id);
+    public ResponseEntity<Void>eliminar(@PathVariable Long id){
+        rolService.eliminar(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
+
